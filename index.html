@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hyc! — jeden przycisk do najbliższego schronienia</title>
+  <meta name="description" content="Hyc! to prosta aplikacja turystyczna: jeden przycisk, GPS i nawigacja po szlaku do najbliższego schronienia. Dołącz do otwartej bety na iOS i Androida.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- apple-touch-icon MUSI byc PNG — iOS nie czyta SVG i przy braku rastra
+       robi wlasny zrzut strony jako ikone na ekranie glownym. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <!-- Open Graph / social preview (podgląd linku na sociale) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gethyc.com/">
+  <meta property="og:site_name" content="Hyc!">
+  <meta property="og:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta property="og:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta property="og:image" content="https://gethyc.com/assets/og-image.jpg?v=20260811">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta name="twitter:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta name="twitter:image" content="https://gethyc.com/assets/og-image.jpg?v=20260811">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- ⚠ ?v= NA CSS I JS JEST OBOWIĄZKOWE — podbij przy każdym wydaniu.
+       Strona stoi na GitHub Pages, a GH Pages IGNORUJE plik `_headers`
+       (to format Netlify/Cloudflare Pages) i serwuje wszystko z
+       `Cache-Control: max-age=600`. Bez wersji w URL-u przeglądarka po
+       deployu potrafi skleić NOWY index.html ze STARYM styles.css i pokazać
+       układ, którego nikt nigdy nie zbudował. Wersja w URL-u wymusza świeże
+       pobranie, bo to inny zasób. -->
+  <link rel="stylesheet" href="styles.css?v=20260812">
+</head>
+<body>
+  <div class="wrap">
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <!-- Wordmark jako PNG (podmiana 0806 na plik dostarczony przez usera,
+               zostaje świadomie: user porównał go z dawnym inline <svg> i wybrał
+               ten rysunek).
+               ⚠ Plik ma 315x144 px, a renderuje się na 29,6 px wysokości —
+               atrybuty width/height zostają przy 105x48, bo opisują ROZMIAR
+               UKŁADU (rezerwacja miejsca, brak CLS), nie rozdzielczość pliku.
+               Do 0810 leżał tu raster 105x48, czyli 1x: na retinie (DPR 2-3)
+               brakowało mu pikseli i wordmark był miękki.
+               Źródło wektorowe: assets/logo-source.svg — stamtąd renderuje się
+               ten raster (kadr przycięty do bounding boxa glifu, żeby proporcje
+               zgadzały się z poprzednim plikiem: 2,1875 vs 2,1878). -->
+          <img class="hero-logo" src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+          <span class="badge">Wersja testowa</span>
+          <h1>Jeden przycisk →<br><span class="accent">najbliższe schronienie</span></h1>
+          <p class="lead">Łączymy dane z&nbsp;wielu źródeł, tworząc <strong>największą bazę schronień w&nbsp;Polsce</strong> — ponad 27 tysięcy punktów</p>
+          <p class="hero-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i&nbsp;inne</p>
+
+          <div class="stores" id="stores">
+            <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
+                 nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
+                 (TestFlight, potem po powrocie z App Store, Hyc!). Baton
+                 wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
+                 PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
+            <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+              <img src="assets/apple.svg" alt="">
+              <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+            </button>
+
+            <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
+                 testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
+                 Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
+                 jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
+            <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+              <img src="assets/google.svg" alt="">
+              <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <!-- Render z Rotato: obracający się telefon Z WŁASNĄ obudową wypaloną
+               w kadrze, więc NIE opakowujemy go w ramkę rysowaną CSS-em (byłby
+               telefon w telefonie). Kadr jest KWADRATOWY (1:1) i ma oddech
+               dookoła telefonu wbudowany w materiał — skalujemy całość, nigdy
+               nie kadrujemy i nie dokładamy marginesu w CSS.
+               0806: placeholder zastąpiony DOCELOWYM nagraniem z aplikacji
+               (splash, mapa z trasą, szczegóły punktu, komentarze).
+               Kolejna podmiana = wymiana assets/demo.mp4 + postera i podbicie
+               ?v=, bez zmian tutaj — o ile nowy render zachowa kadr 1:1
+               i proporcje obudowy w klatce (0,66 wysokości / 0,31 szerokości;
+               z tego wynika `aspect-ratio` boxa w styles.css). -->
+          <!-- ⚠ BRAK `autoplay` jest CELOWY: start odpala main.js po 1 sekundzie,
+               żeby pierwsza klatka chwilę postała (prośba usera 0806). Nie
+               dopisuj tu `autoplay` — nagranie ruszyłoby natychmiast i pauza
+               przestałaby istnieć. `preload="metadata"` zamiast `none`, żeby
+               po tej sekundzie materiał ruszył bez doczytywania. -->
+          <video
+            class="hero-video"
+            poster="assets/demo-poster.jpg?v=4"
+            muted loop playsinline
+            preload="metadata"
+            aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
+            <!-- ⚠ ?v= podbijasz przy każdej podmianie pliku. `_headers` daje
+                 /assets/* `max-age=604800`, ale UWAGA: ten plik działa tylko na
+                 Netlify/Cloudflare Pages — GitHub Pages, na którym stoi
+                 gethyc.com, IGNORUJE go i serwuje wszystko z max-age=600.
+                 Wersja w URL-u jest więc jedynym mechanizmem, który działa
+                 niezależnie od hostingu. -->
+            <source src="assets/demo.mp4?v=4" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
+      <section class="about" aria-label="Co robi aplikacja">
+        <div class="feat">
+          <div class="feat-icon"><img class="icon-comment" src="assets/icon-comment.svg" alt=""></div>
+          <!-- Bez wymuszonego <br> (0806, user: „te teksty zróbmy w jednej
+               linii") — łamanie zostaje po stronie CSS, patrz .feat h3. -->
+          <h3><span class="feat-accent">Komentuj, weryfikuj</span><br>i&nbsp;dodawaj nowe punkty</h3>
+          <p>Aktualne informacje o&nbsp;punktach, których często nie znajdziesz na zwykłych mapach</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon"><img class="icon-bookmark" src="assets/icon-bookmark.svg" alt=""></div>
+          <h3>Zapisuj i&nbsp;twórz <span class="feat-accent">własną<br>kolekcję</span> punktów</h3>
+          <p>Zbieraj górskie miejsca-perełki, które chciałbyś odwiedzić ponownie</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon"><img class="icon-phone" src="assets/icon-phone.svg" alt=""></div>
+          <h3><span class="feat-accent">Telefon</span> do noclegu zawsze<br>pod ręką</h3>
+          <p>By ułatwić rezerwację, zbieramy numery telefonów do schronisk i&nbsp;innych miejsc noclegowych</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <!-- Play wymaga PUBLICZNEGO adresu, pod którym da się zażądać usunięcia
+           konta — także wtedy, gdy usunięcie działa w aplikacji (Data deletion
+           w formularzu App content). Link musi być osiągalny bez logowania. -->
+      <a href="legal/usun-konto.html">Usunięcie konta</a>
+      <a href="mailto:hyc.kontakt@gmail.com?subject=Hyc%21%20%E2%80%94%20kontakt" title="hyc.kontakt@gmail.com">Kontakt</a>
+    </footer>
+
+  </div>
+
+  <!-- Instalacja na Androida — cały proces w jednym oknie, trzy kroki.
+       Wzorzec: editable stepper (UX Patterns / NN-g) — kroki są klikalne,
+       więc user wraca i skacze swobodnie, nie tylko liniowo. Natywny <dialog>
+       daje focus trap, Escape i backdrop bez własnego kodu.
+       Krok 2 włącza się SAM po powrocie z karty grupy (main.js), ale nie jest
+       zablokowany — można w niego wejść od razu. -->
+  <dialog class="flow-modal" id="android-modal" aria-labelledby="modal-title">
+    <button class="flow-modal-close" id="modal-close" type="button" aria-label="Zamknij">&times;</button>
+
+    <p class="modal-intro">By umożliwić testowanie, Google wymaga dwóch kroków — przeprowadzimy Cię przez nie</p>
+
+    <nav class="stepper" aria-label="Postęp instalacji">
+      <ol>
+        <li><button class="stepper-btn is-current" type="button" data-goto="1"><span class="stepper-num">1</span><span class="stepper-name">Grupa</span></button></li>
+        <li><button class="stepper-btn" type="button" data-goto="2"><span class="stepper-num">2</span><span class="stepper-name">Dostęp</span></button></li>
+      </ol>
+    </nav>
+
+    <div class="modal-body" id="modal-body">
+
+      <section class="modal-step" data-step="1">
+        <p class="modal-eyebrow">Krok 1 z 2</p>
+        <h2 class="modal-title" id="modal-title" tabindex="-1" autofocus>Dołącz do grupy testerów</h2>
+        <p class="modal-lead">Google wymaga dołączenia do grupy testerów. Otworzymy ją w nowej karcie — kliknij tam <strong>„Dołącz do grupy”</strong> i przejdź do następnego kroku.</p>
+
+        <div class="modal-note">
+          <p class="modal-note-title">Zaloguj się</p>
+          <p class="modal-note-text">Jeśli nie jesteś zalogowany, nie zobaczysz możliwości dołączenia do grupy. Zaloguj się i <strong>kliknij przycisk „Przejdź do grupy” na dole jeszcze raz</strong> — dopiero wtedy zobaczysz opcję dołączenia, jak na screenshocie poniżej.</p>
+          <p class="modal-note-shot-label">Screenshot</p>
+          <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
+        </div>
+
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
+        </a>
+      </section>
+
+      <section class="modal-step is-hidden" data-step="2">
+        <p class="modal-eyebrow">Krok 2 z 2</p>
+        <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
+        <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy — na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
+        </a>
+      </section>
+
+
+    </div>
+
+    <footer class="modal-nav">
+      <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
+      <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
+    </footer>
+  </dialog>
+
+  <!-- Instalacja na iOS — JEDNA zewnętrzna akcja (link TestFlight), nie
+       kreator: bez steppera, bez Wstecz/Dalej. Modal istnieje wyłącznie po to,
+       żeby ustawić oczekiwania PRZED kliknięciem: to nie jest instalacja
+       Hyc! wprost, tylko przejście na stronę APPLE z dwoma krokami do
+       wykonania TAM.
+       ⛔ Tekst NIE opisuje kroków Apple własnymi słowami — zgłoszenie 0811
+       (zrzut realnej strony testflight.apple.com/join/...) pokazało, że
+       poprzednia wersja („wróć tutaj i kliknij ten sam przycisk jeszcze
+       raz") kłamała: oba kroki (Get TestFlight / View Hyc! Beta) dzieją się
+       na stronie Apple, przez JEJ przyciski, nie przez powrót na gethyc.com.
+       Streszczanie cudzego UI się rozjeżdża przy każdej zmianie po ich
+       stronie — stąd tylko zapowiedź „będą dwa kroki, zrób je tam".
+       Te same klasy co modal Androida (patrz styles.css), zero nowego CSS. -->
+  <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
+    <button class="flow-modal-close" id="ios-modal-close" type="button" aria-label="Zamknij">&times;</button>
+
+    <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
+    <p class="modal-lead">TestFlight to aplikacja Apple do testów beta — Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
+
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+      <img src="assets/apple.svg" alt="">
+      <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
+    </a>
+  </dialog>
+
+  <script src="config.js?v=20260812"></script>
+  <script src="main.js?v=20260812"></script>
+</body>
+</html>
