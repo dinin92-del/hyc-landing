@@ -1,0 +1,2156 @@
+/* ============================================================
+   Hyc! — landing styles
+   Brand tokens mirror lib/shared/theme.dart (single source of truth).
+   Minimal, mobile-first, self-hosted fonts (no external requests).
+   ============================================================ */
+
+/* ---- Fonts (self-hosted → GDPR-clean, no Google CDN) ---- */
+/* Font produktu: Figtree, jeden plik variable (oś wght 300–900) — mirror
+   assets/fonts/figtree w apce. */
+@font-face {
+  font-family: "Figtree";
+  src: url("assets/fonts/Figtree-Variable.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+/* ---- Design tokens ---- */
+:root {
+  --green: #4a7c2f;
+  --green-dark: #2d5016;
+  /* DS `primaryBland` — zgaszona zieleń do glifów ilustracyjnych, które nie
+     mają konkurować z CTA (ten sam token co banner "Zostań pionierem" w appce). */
+  --green-bland: #759c60;
+  --espresso: #2c2620;
+  --bark: #4a423a;
+  /* Poza skalą DS: `driftwood` (#8A8070) na tle strony daje 3,27:1, poniżej
+     progu AA (4,5:1) dla drobnego tekstu. #6B6157 to najjaśniejszy szary tej
+     rodziny, który jeszcze przechodzi (5,09:1) — dla podpisów lżejszych niż
+     `bark`, ale wciąż czytelnych. */
+  --caption: #6b6157;
+  --driftwood: #8a8070;
+  --cream: #f9f6f2;
+  --alabaster: #f0ebe0;
+  /* DS `mist` — jeden stopień skali kremowej pod tłem strony. Powierzchnia
+     kafli: alabaster jest tłem strony, więc kafel w alabastrze byłby
+     niewidoczny, a mist odcina je bez schodzenia w ciemność. */
+  --mist: #e8e2d8;
+  --parchment: #d8d0c0;
+  --orange: #d66000;
+  /* Informacyjny błękit — wskazówka „zaloguj się" w kreatorze Androida.
+     Zwykły, rozpoznawalny niebieski zamiast przygaszonego teala. */
+  --info: #2563eb;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  /* Kolumna treści strony. Wartość dobrana tak, żeby h1 hero nie łamał się na
+     trzy linie i batony sklepowe trzymały jeden rząd — węższa kolumna kosztuje
+     wielkość telefonu w hero, świadomy handel. `max-width` nic nie robi na
+     węższych oknach, więc do ~1000px układ jest bez zmian.
+     Dotyczy całej strony — kafelki „co robi apka" i stopka też rozciągają się
+     do tej samej szerokości, żeby marginesy hero i reszty sekcji się nie
+     rozjeżdżały. */
+  --maxw: 1020px;
+  /* Cienie budowane na brązie marki, nie na neutralnej czerni — czarny cień na
+     kremowym tle robi się szary i „brudzi" paletę. */
+  --shadow-sm: 0 1px 2px rgba(44, 38, 32, 0.06), 0 2px 8px rgba(44, 38, 32, 0.05);
+  --shadow-md: 0 2px 6px rgba(44, 38, 32, 0.07), 0 8px 24px rgba(44, 38, 32, 0.08);
+  --shadow-lg: 0 4px 12px rgba(44, 38, 32, 0.08), 0 18px 44px rgba(44, 38, 32, 0.12);
+
+  /* Wbudowane krzywe CSS są za słabe — te mają „pstryk", który sprawia, że ruch
+     wygląda na zamierzony, a nie na domyślny. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+* { box-sizing: border-box; }
+
+/* Tekst tylko dla czytnika ekranu (np. nagłówek sekcji kafli: kolejność h1, h2, h3). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Ta sama para deklaracji co niżej na <body> — i musi tu być osobno. Na
+   mobile to <html> (documentElement), nie <body>, jest faktycznym
+   kontenerem przewijania wiewportu: `overflow-x: clip` na samym <body> nie
+   wystarcza, jeśli <html> zostaje na `overflow-x: visible`. Bez tej pary
+   strona daje się przesunąć w bok poziomym gestem na całej długości. */
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  /* Miejsce na pasek przewijania zawsze zarezerwowane: hamulec hero
+     (html.hero-brake, overflow: hidden) nie przesuwa wtedy strony w bok na
+     systemach z klasycznym paskiem (Windows). */
+  scrollbar-gutter: stable;
+}
+/* Hamulec hero na czas wjazdu telefonu (main.js): zatrzymuje też
+   bezwładność gładzika, której w Chrome nie da się zablokować
+   preventDefault, i rozpęd palca na iOS. */
+html.hero-brake { overflow: hidden; }
+/* Intro na wejściu (main.js): scroll stoi do końca animacji. */
+html.intro-lock { overflow: hidden; }
+
+body {
+  margin: 0;
+  /* Hero jest szerokie na 100vw, a pas z grafiką na mobile szerszy niż okno
+     (patrz `.hero-scene`) — bez tego wychodzi poziomy pasek przewijania. `clip` zamiast `hidden`:
+     `hidden` robi z <body> kontener przewijania i psułoby `position: sticky`
+     u potomków. Poza mobilem reguła jest bezczynna. Bez zapasowego
+     `overflow-x: hidden`: na iOS < 16 (bez `clip`) robiło z body kontener
+     przewijania i scena hero przestawała się przyklejać; poziomy nadmiar i
+     tak ucina <html> (wyżej). */
+  overflow-x: clip;
+  /* cream, nie alabaster — cieplejsze, jaśniejsze tło. Żadna powierzchnia na
+     stronie nie zakłada, że tło jest alabastrem. */
+  background: var(--cream);
+  color: var(--espresso);
+  font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Figtree renderuje ciężej niż Nunito — cała skala schodzi o stopień wagi
+     (DS: body 400–500, nagłówki 600, label 700). */
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+}
+
+/* Zawijanie globalnie: akapity bez jednowyrazowej ostatniej linii, nagłówki
+   h2 równo rozłożone (h1 ma balance w swojej regule, h3 pretty — patrz
+   .feature-copy h3). */
+p { text-wrap: pretty; }
+h2 { text-wrap: balance; }
+
+a { color: var(--green-dark); }
+
+/* Widoczny fokus klawiatury wszędzie (a11y). Ograniczone do urządzeń z
+   precyzyjnym wskaźnikiem (myszka/trackpad) — WebKit na iOS ma znany bug:
+   tap na <button>/<a> też włącza :focus-visible, nie tylko klawiatura, więc
+   bez tej bramki zielona ramka zostawała na przycisku po każdym dotknięciu.
+   Desktopowa klawiatura nadal działa: `hover:hover` i `pointer:fine` są
+   prawdziwe na każdym komputerze, dotyk ich nie spełnia. */
+@media (hover: hover) and (pointer: fine) {
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+}
+
+/* ---- Ambientowe tło ----
+   Strona ma się mieścić w jednym oknie: logo u góry, stopka przy dolnej
+   krawędzi, hero + kafelki wyśrodkowane w tym, co zostaje. Przy niskim oknie
+   `min-height` przestaje działać w drugą stronę i strona po prostu się
+   przewija — nic się nie przycina. */
+.wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 20px 22px;
+}
+.wrap > main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* flex-start, nie center — center dawał skok pozycji hero w górę dokładnie
+     na progu 1024px (jedno- vs dwukolumnowy układ). flex-start ujednolica
+     pozycję po obu stronach progu. */
+  justify-content: flex-start;
+}
+
+/* ---- Topbar ----
+   Pływająca pigułka (fixed) z delikatnym szkłem: szkło (62% krycia, kolor #fdf9f5, blur 18px), stała
+   (bez zmian po scrollu), żeby hero/treść pod spodem prześwitywały. Sam
+   .topbar obejmuje całą szerokość okna i NIE łapie kliknięć
+   (pointer-events:none) — klikalna jest tylko pigułka.
+   Pasek jest poza przepływem, więc podstrony (bez hero) dostają odstęp
+   od góry w `.wrap` (patrz niżej: body:not(.page-home) .wrap). */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 12px 16px 0;
+  pointer-events: none;
+}
+/* Trzy realne dzieci + `space-between` dzielą wolne miejsce na dwie równe
+   przerwy niezależnie od szerokości logo/buttonu. Stabilność pozycji nav na
+   pobierz.html (bez CTA) zapewnia niewidzialny placeholder o identycznych
+   wymiarach co realny button (patrz pobierz.html).
+   z-index 210: pigułka zostaje NAD przyciemnieniem (.nav-backdrop, 190) i
+   panelem (200), więc hamburger jest klikalny także przy otwartym menu. */
+.topbar-inner {
+  position: relative;
+  z-index: 210;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 8px 8px 8px 20px;
+  border-radius: 999px;
+  /* Blur przywrócony (1008): podejrzewany jako koszt scrolla na iOS Safari,
+     ale po naprawie realnej przyczyny (natywny scroll-timeline na hero) blur
+     okazał się bez wpływu — zdjęty niepotrzebnie. */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(253, 249, 245, 0.62);
+  /* Ledwo widoczny, rozmyty cień: tylko oddziela pigułkę od tła. */
+  box-shadow: 0 2px 12px rgba(44, 38, 32, 0.03);
+  transition: background-color 220ms ease;
+}
+/* Przy otwartym menu pigułka jest pełnokryjąca: pod nią leży przyciemnienie,
+   które przez szkło zszarzałoby jej tło. */
+.topbar:has(.topbar-burger[aria-expanded="true"]) .topbar-inner { background: var(--cream); }
+/* Logo jak w makiecie (autolayout): blok z paddingiem 6px od góry i 4px od
+   lewej, grafika 65x30 (mniejsza niż 79x36 z makiety, decyzja usera). Padding górny optycznie zbija glif do osi linków. */
+.topbar-logo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0 0 4px;
+}
+/* Logo jako bitmapa o dokładnym rozmiarze (1x/2x/3x przez srcset), nie
+   wektor. Chrome z rasteryzacją GPU rysuje ścieżki SVG z 4x MSAA (zmierzone:
+   5 poziomów krycia zamiast ~180 przy rasteryzacji programowej), co przy
+   kursywie na ekranach 1x daje schodkowe skosy. Obrazek jest rysowany jako
+   tekstura, więc ma wygładzanie wyliczone offline (supersampling 24x, filtr
+   pudełkowy) i wygląda tak samo w każdej przeglądarce. Źródło: assets/logo.svg. */
+.topbar-logo img {
+  display: block;
+  width: 69px;
+  height: 32px;
+}
+.topbar-nav {
+  display: none;
+  align-items: center;
+  gap: 44px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.topbar-nav a {
+  /* Hover przyciemnia (opacity), nie zmienia koloru — tekst jest już espresso. */
+  color: var(--espresso);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+.topbar-nav a:hover { opacity: 0.7; }
+
+/* Hamburger — bez niego linki nawigacji na wąskim ekranie miały display:none
+   i żadnego sposobu ich otworzyć. Przycisk 40px, pełne kółko. Na <768px
+   pigułka to wyłącznie logo+hamburger — "Pobierz" nie stoi ściśnięty obok. */
+.topbar-burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--espresso);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .topbar-burger:hover { background: rgba(44, 38, 32, 0.06); }
+}
+.topbar-burger[aria-expanded="true"] { background: rgba(44, 38, 32, 0.06); }
+.topbar-burger svg { display: block; }
+/* Dwie osobne ikony z DS (fill-path, nie stroke) — przełącznik binarny,
+   sterowany aria-expanded. */
+.topbar-burger .icon-close { display: none; }
+.topbar-burger[aria-expanded="true"] .icon-menu { display: none; }
+.topbar-burger[aria-expanded="true"] .icon-close { display: block; }
+
+/* CTA znika z pigułki na mobile — na wąskim ekranie miejsce zajmuje wyłącznie
+   logo+hamburger. Pobrać apkę można z hero (baton) albo wprost pod
+   /pobierz.html. */
+@media (max-width: 767px) {
+  .topbar-inner .store-btn--nav { display: none; }
+}
+
+/* Panel jako karta pod pigułką, nie bottom sheet: wisi na .topbar (fixed, więc
+   jest poprawnym kontekstem dla position:absolute) i zaczyna się tuż pod
+   pigułką (top:100% + 8px). Wjeżdża lekkim zsunięciem + fade. Tło pod spodem
+   przyciemnione (.nav-backdrop). Sterowanie klasą .is-open w nav.js, nie
+   atrybutem hidden — transform potrzebuje elementu cały czas w layoucie. */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 26, 20, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 190;
+}
+.nav-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+/* Bez tego [hidden] nic nie robi — domyślne [hidden]{display:none} (arkusz
+   UA) ma tę samą swoistość co .topbar-nav-mobile{display:flex}, a autor
+   zawsze wygrywa nad UA niezależnie od kolejności. */
+.topbar-nav-mobile[hidden] { display: none; }
+.topbar-nav-mobile {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 100%;
+  margin-top: 8px;
+  z-index: 200;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 120px);
+  overflow-y: auto;
+  background: var(--cream);
+  border-radius: 24px;
+  box-shadow: 0 16px 32px rgba(31, 26, 20, 0.18);
+  padding: 8px 20px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.topbar-nav-mobile.is-open { opacity: 1; transform: translateY(0); }
+/* Bez dividerów między pozycjami linków. Strzałka po prawej. */
+.topbar-nav-mobile a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 4px 4px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--espresso);
+  text-decoration: none;
+}
+.topbar-nav-mobile a .nav-arrow { flex-shrink: 0; color: #000; }
+
+/* Przycisk w pigułce: delikatnie mniejszy padding niż „Dołącz do Skautów"
+   (14px / 28px zamiast 16px / 32px), reszta stylu wspólna. Selektor z
+   .topbar-inner wygrywa swoistością z bazowym .store-btn--nav niżej w pliku. */
+.topbar-inner .store-btn--nav { padding: 14px 28px; }
+
+@media (min-width: 768px) {
+  .topbar { padding-top: 16px; }
+  .topbar-inner { padding: 12px 20px; }
+  .topbar-nav { display: flex; }
+  .topbar-burger { display: none; }
+  .topbar-nav-mobile,
+  .nav-backdrop { display: none !important; }
+  .topbar-inner .store-btn--nav { display: inline-flex; }
+}
+/* .store-btn--nav / .store-btn--primary są zdefiniowane w sekcji "Store
+   buttons" niżej, po bazowym .store-btn — musi tak zostać: source order
+   decyduje, a min-width:0 tutaj przegrałoby z min-width:208px z bazy przy
+   tej samej specyficzności, gdyby baza była niżej w pliku. */
+
+/* Podstrony bez hero: pigułka jest poza przepływem, więc treść dostaje
+   odstęp od góry równy dawnemu paskowi (88px mobile / 92px desktop) — rytm
+   marginesów sekcji pod spodem zostaje taki jak był. Strona główna zaczyna
+   się od hero przy samej krawędzi okna. */
+body:not(.page-home) .wrap { padding-top: 88px; }
+@media (min-width: 768px) {
+  body:not(.page-home) .wrap { padding-top: 92px; }
+}
+
+/* ---- Hero ----
+   Scena przypięta na czas pierwszego scrolla. Struktura:
+     .hero (wysoki tor scrolla) > .hero-stage (sticky, 100svh)
+       > .hero-bg (tło + piny, blednie) + .hero-copy (tekst) + .hero-phone
+   Klasa .is-scrub (main.js) włącza tor i sticky, .is-pinned (pierwszy ruch
+   scrollem w dół) uruchamia przejście czasowe: tekst, piny i tło gasną,
+   telefon wjeżdża na środek. Bez JS, przy „ogranicz ruch" i na bardzo niskich
+   oknach (<560px) zostaje statyczny układ: ekran z tłem i tekstem, telefon
+   pod nim (nachodzi na dolną krawędź tła jak w makiecie).
+   --u = „1 px makiety Figmy" (ramka 1670px): kompozycja 16:9 ma zawsze
+   szerokość okna (cały kadr z wszystkimi pinami), więc piny stoją nad swoimi
+   domkami. W oknie szerszym niż 16:9 kadr jest wyższy od ekranu i przycinany
+   symetrycznie góra/dół; w węższym stoi przy dolnej krawędzi, a nad nim
+   zostaje kremowe niebo. */
+.hero {
+  --vh: max(100svh, 620px);
+  --u: calc(100vw / 1670);
+  /* Gdzie zaczyna się górna krawędź telefonu (ułamek wysokości sceny od góry):
+     na wąskim ekranie telefon wystaje wyżej (więcej widać od dołu), na
+     desktopie ledwie wyziera (patrz blok desktopowy niżej). */
+  --peek: 0.82;
+  /* Telefon: wysokość z okna (sufit 800px), szerokość z proporcji wideo
+     (assets/hero/phone.webm: 824x1672 = 0,4928). */
+  --ph: min(calc(var(--vh) * 0.74), 800px);
+  --pw: calc(var(--ph) * 0.4928);
+  /* Przytrzymanie: ile scrolla scena stoi przypięta po wjeździe telefonu.
+     Krótko, bo w tym czasie strona się nie przesuwa; cały ekran (1029)
+     wyglądał jak zablokowany scroll. Zatrzymanie na telefonie robi hamulec
+     w main.js (pochłania rozpęd gestu na czas wjazdu), nie scroll snap. */
+  --hero-hold: calc(var(--vh) * 0.3);
+  position: relative;
+  /* Wyjście poza kolumnę .wrap do pełnej szerokości okna. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+.hero.is-scrub {
+  height: calc(var(--vh) + var(--hero-hold));
+  /* Koniec wjazdu telefonu: wyśrodkowany po powiększeniu, ale nie wyżej niż
+     pod pigułką. Na .hero, bo czyta to też .hero-qr. */
+  --t1: max(92px, calc((var(--vh) - var(--ph) * 1.12) / 2));
+}
+/* Dotyk: zanim hamulec złapie, szybkie machnięcie przejeżdża 300-430 px
+   (symulator iOS 27), więc przytrzymanie dłuższe niż przy kółku, żeby
+   strona stanęła jeszcze na przypiętym telefonie. */
+@media (pointer: coarse) {
+  .hero { --hero-hold: calc(var(--vh) * 0.6); }
+}
+/* `will-change`: warstwy kompozytora przed startem przejścia, żeby Safari
+   na iOS nie malował ich od zera w jego trakcie. Tylko w trybie scrub — w
+   statycznym układzie warstwa kosztowałaby pamięć bez żadnego zysku. */
+.hero.is-scrub .hero-bg,
+.hero.is-scrub .hero-pins,
+.hero.is-scrub .hero-copy { will-change: opacity, transform; }
+.hero-stage {
+  position: relative;
+  /* flow-root: margines telefonu (statyczny układ) nie ma prawa wyciec przez
+     scenę i zepchnąć w dół całego hero. */
+  display: flow-root;
+  min-height: var(--vh);
+  padding-bottom: 72px;
+}
+.hero.is-scrub .hero-stage {
+  position: sticky;
+  top: 0;
+  height: var(--vh);
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: clip;
+}
+/* Po wjeździe telefon mieści się w scenie, więc przycinanie nie jest już
+   potrzebne, a ucinało cień pod telefonem twardą krawędzią, gdy scena
+   odjeżdża. */
+.hero.is-scrub.is-pinned .hero-stage { overflow: visible; }
+
+/* Tło: kompozycja. Po przypięciu blednie. */
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--vh);
+  overflow: hidden;
+  /* Bez własnego koloru pod grafiką: PNG z makiety jest półprzezroczysty
+     (alfa 70-94%) i ma prześwitywać na kremowym tle strony. */
+}
+/* Mobile/portret: pas z grafiką przy dolnej krawędzi (szerszy niż okno,
+   kadr środkowy); nad nim zostaje kremowe tło strony. Wygaszenie górnej
+   krawędzi maską, żeby nie było szwu. */
+.hero-scene {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--vh) * (1 - var(--peek)) - 24px);
+  width: 208vw;
+  aspect-ratio: 2560 / 1440;
+  transform: translateX(-50%);
+}
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+/* Telefon (≤767px): pejzaż bardziej przybliżony, sięga do samego dołu ekranu. */
+@media (max-width: 767px) {
+  .hero-scene {
+    bottom: 0;
+    width: 280vw;
+  }
+  .hero-img {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  }
+}
+.hero-pins {
+  --pin-k: 0.88;
+  position: absolute;
+  inset: 0;
+}
+/* Pin wpada od czubka (skala + lekkie „odbicie") i stoi nieruchomo. Ciągłe
+   unoszenie zdjęte: ułamkowe przesunięcia w pikselach rozmywały bitmapy
+   pinów (próbkowanie dwuliniowe w ruchu). */
+.pin {
+  position: absolute;
+  /* Piny w wąskim kadrze (mobile) są powiększane wokół czubka — `scale`
+     jako osobna właściwość składa się z animacjami na `transform`. */
+  scale: calc(var(--pin-k, 1) * var(--pin-m, 0.85) * 1.15);
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  transform-origin: 50% 100%;
+}
+.pin img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Woda zostaje w poprzednim rozmiarze, reszta pinów jest o 15% mniejsza. */
+.pin--woda { --pin-m: 1; }
+/* „Pop" z czubka pinezki: rośnie od zera, przestrzeliwuje do 1,4x, lekko
+   zapada się poniżej 1 i siada na swoim rozmiarze. */
+@keyframes pin-drop {
+  0% { opacity: 0; transform: translateY(6px) scale(0); }
+  40% { opacity: 1; transform: translateY(-4px) scale(1.4); }
+  68% { transform: translateY(1px) scale(0.9); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Tekst: po przypięciu odjeżdża w górę i gaśnie. */
+.hero-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Tekst wyśrodkowany w górnej połowie obszaru nad telefonem (do 25% vh).
+     min(): nie pozwala tekstu nachodzić na telefon (zapas 360px na blok). */
+  top: max(128px, min(calc(var(--vh) * 0.25), calc(var(--vh) * var(--peek) - 360px)));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  text-align: center;
+}
+.hero-br { display: none; }
+.stores { justify-content: center; }
+
+/* Telefon: wideo z Rotato (ramka + ekran, przezroczyste tło) z posterem.
+   Statycznie: pod tekstem, zaczyna się na 85,5% wysokości ekranu (nachodzi na
+   dół tła). W trybie scrub: po przypięciu wjeżdża z dołu na środek i rośnie
+   o 12%. */
+.hero-phone {
+  position: relative;
+  z-index: 3;
+  width: var(--pw);
+  height: var(--ph);
+  margin: calc(var(--vh) * var(--peek)) auto 0;
+}
+/* Cień pod telefonem to osobna warstwa za wideo, nie `filter: drop-shadow` na
+   <video>: rozmycie liczone raz, a nie co klatkę nagrania. Kształt = obrys
+   telefonu, dwie warstwy jak w iOS (ciasny kontakt + szeroka, miękka poświata
+   z przesunięciem w dół). Inset chowa krawędź warstwy pod nieprzezroczystym
+   obrysem telefonu: box-shadow nie maluje się wewnątrz własnej ramki, więc
+   bez niego między ramką a krawędzią telefonu został jasny pasek tła.
+   Po przypięciu scena nie przycina (overflow: visible), więc cień może
+   sięgać dalej niż odstęp pod telefonem. */
+.hero-phone::before {
+  content: "";
+  position: absolute;
+  inset: 1% 2%;
+  z-index: -1;
+  border-radius: calc(var(--pw) * 0.18);
+  box-shadow:
+    0 calc(var(--pw) * 0.015) calc(var(--pw) * 0.04) rgba(44, 38, 32, 0.3),
+    0 calc(var(--pw) * 0.05) calc(var(--pw) * 0.12) rgba(44, 38, 32, 0.3),
+    0 calc(var(--pw) * 0.12) calc(var(--pw) * 0.28) rgba(44, 38, 32, 0.2);
+}
+.phone-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.hero.is-scrub .hero-phone {
+  --t0: calc(var(--vh) * var(--peek));
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin: 0 0 0 calc(var(--pw) / -2);
+  transform-origin: 50% 0;
+  transform: translateY(var(--t0));
+  will-change: transform;
+}
+
+/* Wjazd po przypięciu: przejście czasowe (transform/opacity, wątek
+   kompozytora), nie animacja sterowana pozycją scrolla. Scroll zostaje
+   zwykłym scrollem przeglądarki, a scena porusza się płynnie niezależnie od
+   tego, czy user kręci kółkiem, gładzikiem czy palcem. Czas telefonu musi
+   się zgadzać z PHONE_MS w main.js (start wideo po dojeździe). Te same
+   przejścia działają w drugą stronę po powrocie na samą górę. */
+.hero.is-scrub .hero-bg { transition: opacity 600ms ease; }
+.hero.is-scrub .hero-pins { transition: opacity 260ms ease-out, transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+.hero.is-scrub .hero-copy { transition: opacity 320ms ease-out, transform 560ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 0s; }
+.hero.is-scrub .hero-phone { transition: transform 850ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+.hero.is-pinned .hero-bg { opacity: 0; }
+.hero.is-pinned .hero-pins { opacity: 0; transform: translateY(-40px); }
+/* visibility po zgaśnięciu: niewidoczne przyciski sklepów nie łapią fokusu
+   z klawiatury ani kliknięć. */
+.hero.is-pinned .hero-copy {
+  opacity: 0;
+  transform: translateY(-70px);
+  visibility: hidden;
+  transition-delay: 0s, 0s, 320ms;
+}
+.hero.is-scrub.is-pinned .hero-phone { transform: translateY(var(--t1)) scale(1.12); }
+
+/* QR do sklepów: kafel z podkładem jak pod grafikami bulletów
+   (.feature-media). Tylko desktop z myszą (pointer: fine), bo własnego
+   ekranu nikt nie zeskanuje; na telefonie i tablecie zostaje display: none,
+   więc obrazek z loading="lazy" się nawet nie pobiera. Na stronie Pobierz
+   kafel stoi pod batonami w każdym oknie z myszą. W hero stoi obok telefonu,
+   na wysokości jego środka, tylko w układzie desktopowym hero: w trybie
+   scrub wchodzi po dojeździe, pozycja liczy powiększenie 1,12. */
+.qr-card {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 12px 12px;
+  background: #F6F2E9;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.qr-card p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--espresso);
+}
+.qr-card img { display: block; }
+@media (pointer: fine) {
+  .pobierz-hero .qr-card:not([hidden]) {
+    display: flex;
+    width: fit-content;
+    margin: 40px auto 0;
+  }
+}
+@media (min-aspect-ratio: 13/10) and (min-width: 900px) and (pointer: fine) {
+  .hero-qr:not([hidden]) {
+    display: flex;
+    position: absolute;
+    z-index: 3;
+    left: calc(50% + var(--pw) / 2 + 56px);
+    top: calc(var(--vh) * var(--peek) + var(--ph) / 2);
+    transform: translateY(-50%);
+  }
+  .hero.is-scrub .hero-qr:not([hidden]) {
+    left: calc(50% + var(--pw) * 0.56 + 56px);
+    top: calc(var(--t1) + var(--ph) * 0.56);
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* Przejście tylko na wejściu: na stanie bazowym kafel migałby przy starcie
+     strony, gdy .is-scrub zastaje go już widocznego. */
+  .hero.is-scrub.is-pinned .hero-qr:not([hidden]) {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 400ms ease-out 700ms, visibility 0s 700ms;
+  }
+}
+
+/* Układ desktopowy: okno szersze niż 1,3:1 i min. 900px. Kompozycja 16:9
+   skalowana jak `cover` i wyśrodkowana, tekst przypięty do jej współrzędnych
+   (247/1670 od góry kompozycji), więc nie wchodzi na góry także w niskich
+   oknach. */
+@media (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  .hero { --peek: 0.855; }
+  .hero-scene {
+    left: 50%;
+    /* Kadr niższy od ekranu: przy dolnej krawędzi (0). Wyższy: wyśrodkowany,
+       czyli przycięty symetrycznie (ujemny bottom = połowa nadwyżki). */
+    bottom: min(0px, calc((var(--vh) - 942 * var(--u)) / 2));
+    width: calc(1670 * var(--u));
+    height: calc(942 * var(--u));
+    aspect-ratio: auto;
+    transform: translateX(-50%);
+  }
+  .hero-img {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  }
+  .hero-pins { --pin-k: 0.8; }
+  /* max(): w niskich oknach tekst nie wchodzi pod pigułkę nawigacji. */
+  .hero-copy { top: max(128px, calc((var(--vh) - 942 * var(--u)) / 2 + 247 * var(--u) + 28px)); }
+  .hero-br { display: inline; }
+}
+
+/* ---- Rytm pionowy kolumny hero ----
+   Dwie grupy: [nagłówek] -> [opis] -> [batony]. Odstęp hero-tags->batony
+   zostaje najszerszy (32px) — przejście do akcji. */
+h1 {
+  font-weight: 700;
+  /* Stałe px per breakpoint, nie fluid clamp(…vw…) — na mobile clamp czytał
+     vw z pełnej szerokości ekranu i przy niektórych szerokościach (telefon
+     w poziomie, wąski tablet) wychodził większy niż desktop. Rosnące stałe
+     wartości per breakpoint eliminują to. Baza = mobile. */
+  font-size: 44px;
+  line-height: 1.1;
+  color: var(--espresso);
+  margin: 0 0 24px;
+  /* Pasmo dla dużego display-type to -0.01 do -0.02em. */
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+/* Wąskie telefony (≤400px) — 44px nie mieści frazy "czego potrzebujesz"
+   w jednej linii nawet z text-wrap:balance. Sztywne <br> w markupie kiedyś
+   wymuszały gorszy podział niż balance by wybrał — usunięte z HTML; to tylko
+   dogrywa rozmiar tam, gdzie balance i tak nie ma z czego wybrać dobry
+   podział przy 44px. 36px daje trzy równe linie bez sierot. */
+@media (max-width: 400px) {
+  h1 { font-size: 36px; }
+}
+/* Akcent na wordmarku. */
+.accent { color: var(--green-dark); }
+
+/* Hero h1: mobile skaluje się z szerokością okna; w układzie desktopowym
+   rozmiar liczy się z kompozycji (76px makiety, sufit 70px na największych ekranach), dwie linie
+   łamane <br class="hero-br">. Interlinia 1.15: system designu schodzi z
+   współczynnikiem wraz z rozmiarem. */
+.hero h1 {
+  font-size: clamp(32px, 9.6vw, 52px);
+  line-height: 1.15;
+  margin: 0 auto 20px;
+  /* Mobile: większe marginesy boczne (8vw z każdej strony), więc nagłówek
+     łamie się na trzy linie. */
+  width: 84vw;
+}
+.hero-tags {
+  margin: 0 auto 32px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--bark);
+  max-width: 46ch;
+}
+/* Podtytuł hero: ten sam krój co opisy bulletów (.feature-copy p): 17px,
+   interlinia 1,5, kolor --bark, na każdej szerokości. Większy odstęp pod nim
+   do przycisków sklepów. */
+.hero .hero-tags {
+  margin-bottom: 26px;
+  font-size: 17px;
+  color: var(--bark);
+  max-width: 40ch;
+}
+@media (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  .hero h1 {
+    width: auto;
+    font-size: min(calc(72 * var(--u)), 66px);
+    margin-bottom: calc(21 * var(--u));
+  }
+  .hero .hero-tags {
+    font-size: 17px;
+    line-height: 1.5;
+    /* Szeroki na tyle, żeby podtytuł zmieścił się w dwóch liniach. */
+    max-width: 40em;
+    text-wrap: balance;
+    margin-bottom: calc(51 * var(--u));
+  }
+}
+
+/* ---- Store buttons ---- */
+.stores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+/* Anatomia odwzorowuje układ przycisków sklepowych: cienka ramka, ikona po
+   lewej, dwie linie tekstu (mała wersalikowa nad nazwą), proporcja ok. 3:1
+   i małe zaokrąglenie. Kolory i typografia są nasze — nie kopiujemy artworku
+   Google ani Apple, tylko konwencję formy.
+   Dwa warianty, bo każda platforma ma inną barwę bazową: Apple rozdaje badge
+   czarny, a kolorowe „G" Google żyje natywnie na białym tle z szarą ramką —
+   czerń pod nim to obce zestawienie. */
+/* Baton „pobierz" nie ma konkurować z nagłówkiem o pierwszeństwo w hierarchii
+   — kadr jest mniejszy niż w kreatorze, ale tekst skalowany ostrożniej niż
+   kadr: przy zbyt małym stopniu wersalik podpisu platformy staje się
+   nieczytelny. Wagę odbieramy rozmiarem pola i ikony, nie czytelnością. */
+/* Baza = duży format (208px+, jak w kreatorze), mały wariant (--compact,
+   tylko ekran główny) to wyjątek — dużych instancji jest więcej i to one
+   niosą realną akcję „otwórz Sklep Play"; hero to podgląd/skrót. */
+.store-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 208px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  /* Wyliczone właściwości, nigdy `all` — inaczej przeglądarka animuje też to,
+     czego nie chcemy (np. filtr na logo Google przy zmianie stanu). */
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 200ms var(--ease-out),
+    background 200ms ease,
+    border-color 200ms ease;
+}
+/* Hover tylko tam, gdzie istnieje kursor — na dotyku „hover" odpala się przy
+   tapnięciu i przycisk zostaje uniesiony po oderwaniu palca. */
+@media (hover: hover) and (pointer: fine) {
+  .store-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+}
+/* Wciśnięcie musi być natychmiast widoczne — bez tego przycisk sprawia
+   wrażenie, jakby nie zarejestrował kliknięcia. */
+.store-btn:active { transform: scale(0.975); transition-duration: 100ms; }
+.store-btn img { width: 26px; height: 26px; flex: 0 0 auto; }
+.store-btn .label { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+/* Podpis platformy (małe litery, nie wersaliki) ma być drugorzędny wobec
+   nazwy pod nim. Przy małym stopniu wielkie litery z dodatkowym światłem
+   czytają się jak font wąski — wszystkie znaki mają tę samą wysokość, więc
+   słowo traci sylwetkę. Zwykła wielkość liter daje wyraźne wydłużenia górne
+   i dolne: czytelna mimo mniejszego stopnia, i optycznie drobniejsza niż
+   wersaliki, bo pracuje na wysokości x. To też wzorzec oryginalnego batona
+   Apple („Download on the"). */
+.store-btn .label small {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+.store-btn .label strong { font-size: 18px; font-weight: 600; }
+
+/* Kompaktowy wariant — WYŁĄCZNIE dwa batony na ekranie głównym, żeby nie
+   konkurowały wagą z nagłówkiem. Kreator instalacji zostaje w pełnym
+   rozmiarze: to tam user faktycznie klika, więc baton ma być oczywisty. */
+.store-btn--compact {
+  gap: 11px;
+  min-width: 186px;
+  padding: 9px 16px;
+  border-radius: 11px;
+}
+.store-btn--compact img { width: 24px; height: 24px; }
+.store-btn--compact .label small { font-size: 11px; }
+.store-btn--compact .label strong { font-size: 17px; }
+/* Wąskie telefony (≤400px) — dwa batony min-width:186px (+gap 12) = 384px
+   nie mieszczą się w dostępnych ~335px, batony spadały do dwóch rzędów.
+   Zmniejszone tak, by oba zmieściły się obok siebie: 2×150 + 12 gap = 312px
+   < 335px. */
+@media (max-width: 400px) {
+  .store-btn--compact {
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 0;
+    padding: 8px 12px;
+  }
+  .store-btn--compact img { width: 20px; height: 20px; }
+  .store-btn--compact .label small { font-size: 10px; }
+  .store-btn--compact .label strong { font-size: 15px; }
+}
+/* Gdy main.js chowa drugi baton (wykrycie iOS/Android), zostaje jeden —
+   ciasnota ≤400px wyżej była tylko po to, żeby DWA batony zmieściły się
+   obok siebie. Jeden nie musi być ucięty do tej samej miary — ale wraca
+   do zwykłej skali .store-btn (base, niżej w pliku), nie większy niż to. */
+.stores--single { justify-content: center; }
+.stores--single .store-btn--compact {
+  min-width: 0;
+  flex: 0 1 auto;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+.stores--single .store-btn--compact img { width: 26px; height: 26px; }
+.stores--single .store-btn--compact .label small { font-size: 11px; }
+.stores--single .store-btn--compact .label strong { font-size: 18px; }
+
+/* Wariant ciemny — Apple. */
+.store-btn--dark {
+  background: #14120f;
+  border-color: rgba(249, 246, 242, 0.28);
+  color: var(--cream);
+}
+.store-btn--dark:hover { background: #211d18; border-color: rgba(249, 246, 242, 0.45); }
+.store-btn--dark img { filter: brightness(0) invert(1); }
+/* Wyjątek dla Google: to jedyne logo tutaj złożone z czterech kolorów, więc
+   wybielanie kasuje jego rozpoznawalność. Apple i tak jest jednobarwne —
+   wybielenie mu nie szkodzi, dlatego zostaje na regule ogólnej. */
+.store-btn--dark img[src*="google"] { filter: none; }
+
+/* .is-primary (main.js) ma już efekt bez stylu: przesuwa właściwy przycisk
+   na górę (order:-1 inline). Obwódka + cień tu usunięte świadomie — na
+   telefonie renderowały się jak porzucony focus ring bez tekstu tłumaczącego,
+   że to „Twoja platforma". Klasa zostaje w JS na wypadek przyszłego,
+   czytelniejszego oznaczenia (badge). */
+
+/* Stan „jeszcze niedostępne" — wspólny dla obu wariantów. */
+.store-btn.is-disabled {
+  background: var(--parchment);
+  border-color: transparent;
+  color: var(--driftwood);
+  pointer-events: none;
+  box-shadow: none;
+}
+.store-btn.is-disabled img { filter: none; opacity: 0.4; }
+
+/* Wariant primary — zielony, DS `primary`. */
+.store-btn--primary {
+  background: var(--green-dark);
+  border-color: transparent;
+  /* Biały, nie --cream — na ciemnej zieleni kremowy odcień czytał się jako
+     "nie do końca biały". --cream ma sens przy ciepłym tle strony; tu tła
+     nie ma, więc czysty biały daje mocniejszy kontrast. */
+  color: #ffffff;
+}
+.store-btn--primary:hover { background: #234010; }
+
+/* Wariant jednolinijkowy — wyłącznie topbar (i "Pobierz Hyc!" jako link
+   gdziekolwiek indziej, nie sklepowy baton). Bazowy .store-btn (dwie linie,
+   min-width 208px) jest za ciężki obok logo i linków na pasku ~56px —
+   ten wariant trzyma jedną linię tekstu bez wymuszonej szerokości.
+   Musi stać PO bazowym .store-btn (source order) — inaczej min-width:0
+   przegrywa z min-width:208px z bazy. */
+.store-btn--nav {
+  min-width: 0;
+  /* Te same wymiary co przycisk „Dołącz do Skautów" (jedna definicja dla obu):
+     wysokość z paddingu 16px + line-height:1, boki 32px. */
+  height: auto;
+  padding: 16px 32px;
+  border-radius: 999px;
+  /* 17px / 600 jak nazwa sklepu na batonach (.store-btn--compact .label
+     strong), żeby kroje na przyciskach były spójne. */
+  font-size: 17px;
+  /* line-height:1 naprawia pionowe centrowanie tekstu. */
+  line-height: 1;
+  font-weight: 600;
+}
+
+/* ---- Kreator instalacji na Androida ----
+   Ekran główny ma zwykły baton „Google Play"; dwa kroki (grupa → dostęp) żyją
+   tylko tutaj. Natywny <dialog> daje focus trap, Escape i backdrop za darmo
+   — patrz komentarz w index.html.
+   Szerokość wg wytycznych czytelności: ~560 px na desktopie, ale nigdy więcej
+   niż 92vw, i max-height 90vh ze scrollem — inaczej na telefonie ucieka
+   przycisk zamykania poza ekran. */
+.flow-modal {
+  width: min(560px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px 32px 24px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--cream);
+  color: var(--espresso);
+  box-shadow: 0 12px 48px rgba(12, 12, 13, 0.24);
+}
+.flow-modal::backdrop { background: rgba(44, 38, 32, 0.55); }
+
+/* Wejście okna. Modal NIE jest zakotwiczony w konkretnym przycisku, więc skaluje
+   się od środka (inaczej niż popover, który powinien wyrastać z triggera).
+   Start od 0.96, nigdy od 0 — nic w realnym świecie nie pojawia się z niczego,
+   a skok z zera czyta się jak błąd renderowania. */
+@media (prefers-reduced-motion: no-preference) {
+  .flow-modal[open] { animation: modal-in 220ms var(--ease-out); }
+  .flow-modal[open]::backdrop { animation: fade-in 220ms var(--ease-out); }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
+/* Tło nie przewija się pod otwartym modalem. Samo overflow:hidden NIE
+   WYSTARCZA na Safari iOS — wieloletni, udokumentowany limit WebKita:
+   dokument i tak przewija się (rubber-band) pod spodem otwartego <dialog>.
+   Właściwa technika — zamrożenie <body> na position:fixed w zapamiętanym
+   miejscu przewinięcia — używana przez każdą poważną bibliotekę modali
+   (react-remove-scroll, body-scroll-lock). `top` ustawia JS (main.js:
+   lockScroll/unlockScroll), bo zależy od pozycji przewinięcia w momencie
+   otwarcia. */
+body.has-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ---- Stepper (klikalny) ----
+   Hierarchia wizualna: BIEŻĄCY jest najmocniejszy (wypełniony, ciemny, z ringiem
+   i większą etykietą), UKOŃCZONY stonowany (jasne tło, ptaszek — potwierdza, ale
+   nie krzyczy), PRZYSZŁY wygaszony. Wcześniej ukończony miał mocniejsze
+   wypełnienie niż bieżący, więc oko szło w złe miejsce.
+   Stan niesie kształt, znak i waga fontu, nie sam kolor. */
+.stepper { margin: 0 0 24px; }
+.stepper ol {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stepper li { display: flex; align-items: center; flex: 1; }
+/* Linia łącząca: zielona za krokami już przebytymi, szara przed. */
+.stepper li:not(:last-child)::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  min-width: 12px;
+  margin: 0 5px;
+  border-radius: 2px;
+  background: var(--parchment);
+  transition: background 0.25s ease;
+}
+.stepper li.is-passed::after { background: var(--green); }
+
+.stepper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px 4px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--driftwood);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.stepper-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--parchment);
+  background: var(--cream);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  /* Wyliczone właściwości zamiast `all`: przy `all` przeglądarka animuje też
+     `content` ptaszka i szerokość, przez co numer kroku „mrugał" przy zmianie
+     stanu zamiast płynnie zmienić kolor. */
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* UKOŃCZONY — potwierdzenie, nie wołanie o uwagę: jasne tło, zielony ptaszek. */
+.stepper-btn.is-done { color: var(--bark); }
+.stepper-btn.is-done .stepper-num {
+  /* Bez obwódki — sam ptaszek wystarcza, a ring zostaje wyróżnikiem
+     WYŁĄCZNIE kroku bieżącego. */
+  border-color: transparent;
+  background: rgba(74, 124, 47, 0.14);
+  color: var(--green-dark);
+  font-size: 0;
+}
+.stepper-btn.is-done .stepper-num::before { content: "✓"; font-size: 13px; font-weight: 700; }
+.stepper-btn.is-done:hover { background: rgba(74, 124, 47, 0.08); color: var(--green-dark); }
+
+/* BIEŻĄCY — najmocniejszy punkt w całym stepperze. */
+.stepper-btn.is-current {
+  color: var(--green-dark);
+  font-weight: 700;
+  font-size: 12.5px;
+}
+.stepper-btn.is-current .stepper-num {
+  border-color: var(--green-dark);
+  background: var(--green-dark);
+  color: var(--cream);
+  /* Ring odsuwa bieżący krok od tła — działa też bez rozróżniania kolorów. */
+  box-shadow: 0 0 0 3px rgba(74, 124, 47, 0.22);
+}
+
+/* PRZYSZŁY zostaje na stanie bazowym (szary outline). */
+.stepper-btn:not(.is-current):not(.is-done):hover { color: var(--bark); }
+
+/* Nazwy kroków chowają się na wąskich ekranach — numery i ptaszki wystarczą. */
+@media (max-width: 430px) { .stepper-name { display: none; } }
+
+/* ---- Treść kroku ----
+   Wszystkie kroki leżą w JEDNEJ komórce siatki, jeden na drugim, więc wysokość
+   modala jest stała i równa najwyższemu krokowi — nic nie skacze przy
+   przełączaniu. Sztywne min-height nie zadziałało: krok z wskazówką o logowaniu
+   jest wyższy, niż dało się przewidzieć liczbą.
+   Ukryte kroki chowamy przez visibility, nie display — display:none wypadłby
+   z siatki i wysokość znowu by się zmieniała. visibility:hidden zabiera je
+   też z kolejności tabulacji, więc klawiatura nie wpada w niewidoczne pola. */
+.modal-body { display: grid; }
+.modal-step {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Bez wspólnego gapa: rytm robią marginesy poszczególnych elementów, bo
+     „KROK 1 Z 3" należy do tytułu, a ramka i przycisk to osobne bloki.
+     Jednolite 12px zrównywało te relacje i wszystko zlewało się w listę. */
+}
+.modal-step.is-hidden { visibility: hidden; }
+/* Krok wjeżdża wyliczoną krzywą, nie domyślnym `ease` — przy zmianie kroku
+   liczy się natychmiastowy ruch na starcie, bo to reakcja na kliknięcie. */
+.modal-step.is-entering { animation: flow-in 300ms var(--ease-out) both; }
+@keyframes flow-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal-step.is-entering { animation: none; }
+}
+
+/* Wstęp nad stepperem — wyjaśnia, PO CO są te kroki, zanim user zacznie klikać. */
+.modal-intro {
+  margin: 0 0 20px;
+  padding-right: 28px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--bark);
+}
+
+/* Ostrzeżenie o zalogowaniu — najczęstsza pułapka: niezalogowany user widzi
+   na stronie grupy „Nie masz uprawnień dostępu do tej treści" i myśli, że
+   nie ma dostępu, zamiast się po prostu zalogować. */
+.modal-note {
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--info);
+  background: rgba(37, 99, 235, 0.08);
+}
+.modal-note-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--espresso);
+}
+.modal-note-text { margin: 0; font-size: 13px; line-height: 1.5; color: var(--bark); }
+.modal-note-text em { font-style: normal; background: rgba(37, 99, 235, 0.15); padding: 1px 4px; border-radius: 4px; }
+/* Zrzut jest DOWODEM do tekstu obok, nie ilustracją samą w sobie — na pełnej
+   szerokości boksu przejmował uwagę i wyglądał na główną treść notatki.
+   50% szerokości zostawia go czytelnym (to jedna linijka tekstu), ale wraca
+   mu rolę przypisu. `max-width` w px pilnuje, żeby na szerokim modalu nie
+   urósł z powrotem. */
+/* Etykieta nad dowodem — mówi WPROST, że to zrzut ekranu, nie kolejny
+   element interfejsu do kliknięcia (obrazek ma niebieski link w środku,
+   który mógłby się z czymś klikalnym pomylić bez tego podpisu). */
+.modal-note-shot-label {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--caption);
+}
+.modal-note-shot {
+  display: block;
+  width: 50%;
+  max-width: 260px;
+  border-radius: 6px;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.modal-eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.modal-title {
+  margin: 0 0 10px;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+/* Nagłówek nosi tabindex="-1" autofocus — to on dostaje fokus przy otwarciu
+   modala, nie przycisk zamknięcia. showModal() bez autofocus fokusuje
+   pierwszy element w DOM, czyli X, i Safari na iOS rysuje wtedy swoją
+   domyślną niebieską obwódkę wokół krzyżyka bez żadnego dotknięcia przez
+   usera. Fokus na nagłówku jest zresztą zgodny z praktyką a11y dla okien
+   dialogowych — czytnik ekranu odczytuje tytuł modala zamiast słowa
+   „Zamknij". outline:none jest tu bezpieczne, bo nagłówek nie jest
+   interaktywny: klawiatura i tak przechodzi Tabem do przycisków, które mają
+   własny widoczny fokus. */
+.modal-title:focus { outline: none; }
+.modal-lead { margin: 0 0 20px; font-size: 15px; color: var(--bark); }
+/* ---- Nawigacja kreatora ----
+   Kolejność Wstecz → Dalej (lewo→prawo), „Wstecz" wyłączony na pierwszym kroku. */
+.modal-nav {
+  display: flex;
+  /* Dwie właściwości, które pasek dostawał od ogólnej reguły `footer`,
+     dopóki był elementem <footer> (teraz <div>, bo <footer> w <dialog>
+     liczył się jako druga stopka strony dla czytnika ekranu). */
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--parchment);
+}
+.nav-btn {
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--parchment);
+  background: var(--cream);
+  color: var(--espresso);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 140ms var(--ease-out);
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--bark); }
+/* Ten sam sygnał wciśnięcia co na batonach sklepowych — kreator ma się
+   „słuchać" tak samo jak ekran główny. */
+.nav-btn:not(:disabled):active { transform: scale(0.97); }
+.nav-btn:disabled { opacity: 0.4; cursor: default; }
+.nav-btn.is-next {
+  border-color: var(--green-dark);
+  background: var(--green-dark);
+  color: var(--cream);
+}
+.nav-btn.is-next:hover { background: var(--green); border-color: var(--green); }
+
+/* Baton otwierający modal jest <button>, nie <a> — wyrównaj do reszty. */
+button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align: left; }
+
+/* ---- "O aplikacji" (feature-list) ----
+   Karta z grafiką + nagłówek/tekst obok, sześć niezależnych bloków, każdy
+   z własną grafiką i własnym pytaniem/odpowiedzią. */
+.feature-list { margin-top: 100px; margin-bottom: 48px; }
+.feature-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  /* Na mobile CAŁY bullet (grafika + pigułka + nagłówek + tekst) leży w
+     jednym kaflu — ten sam motyw co podkład grafiki na desktopie (tło,
+     zaokrąglenie), rozciągnięty na cały blok, bo na mobile nie ma już
+     dwukolumnowego podziału, który by to naturalnie rozdzielał. Zdjęte
+     ≥1024px, gdzie podkład zostaje WYŁĄCZNIE sprawą .feature-media. */
+  background: #F6F2E9;
+  border-radius: 20px;
+  padding: 44px 24px;
+}
+.feature-row + .feature-row { margin-top: 32px; }
+.feature-media {
+  display: block;
+  width: 100%;
+  max-width: 275px;
+  height: auto;
+  box-sizing: border-box;
+  /* Wyśrodkowana na mobile. Od 1024px (2 kolumny, patrz blok niżej) auto
+     z lewej przesuwa kartę bliżej tekstu w węższej kolumnie grafiki, zamiast
+     zostawiać pustkę po prawej obok gapu. */
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Duży bold nagłówek: ciaśniejsza interlinia i lekko ujemny tracking (pasmo
+   -0.01 do -0.02em). Body pod nim nie skaluje się 1:1 z nagłówkiem — zostaje
+   w wygodnym paśmie czytelności 16-18px niezależnie od wielkości nagłówka. */
+/* Piny kategorii nad bulletem — kolory/rozmiary ze specu Figmy, ikony jako
+   realne kształty (nie eksportowane prostokąty). */
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  /* Wyśrodkowane na mobile, flex-start od 1024px — patrz blok niżej. */
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 24px;
+  font-family: 'Figtree', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  /* line-height:1 ściąga box tekstu do wysokości glifu, ale nie do wysokości
+     linii — przeglądarka dalej liczy miejsce na descender, więc tekst
+     realnie zajmował więcej niż ikona i flex centrował go wobec własnej,
+     wyższej skrzynki. 16px (= wysokość ikony) daje tekstowi i ikonie
+     dokładnie tę samą wysokość flex-itemu. */
+  line-height: 16px;
+}
+/* Bez margin-top na ikonie — chodzi o symetryczny padding ikony do krawędzi
+   pigułki, nie o optyczne dopasowanie do tekstu. Bez przesunięcia ikona 16px
+   w pigułce 24px ma z definicji 4px/4px (flex align-items:center),
+   identycznie na wszystkich tagach. */
+.feature-tag svg { display: block; width: 16px; height: 16px; flex-shrink: 0; fill: currentColor; }
+/* Gołym tekstem (bez wrappera) Range.getBoundingClientRect mierzył 3px
+   odstępu od góry / 4px od dołu — metryki fonta liczone inaczej dla
+   anonimowego flex-itemu z samego tekstu niż dla bloku. Owinięcie w <span
+   class="feature-tag-label"> + display:block wystarczyło: 4px/4px na
+   wszystkich tagach. */
+.feature-tag-label { display: block; margin-top: 1px; }
+/* Tła mają wspólną jasność (L≈0,94 w HSL), różni je tylko odcień — teksty/
+   ikony zostają przy oryginalnych, w pełni nasyconych wartościach marki. */
+.feature-tag--schronienia { background: #E2F1DA; color: #2D5016; }
+.feature-tag--noclegi { background: #E8E5FA; color: #50469D; }
+.feature-tag--woda { background: #E7F2F9; color: #008EE6; }
+.feature-tag--namiot { background: #E2F1DA; color: #2D5016; }
+.feature-tag--medyczna { background: #FAE7E5; color: #B3261E; }
+.feature-tag--sklepy { background: #F6EAF0; color: #C4367C; }
+.feature-tag--restauracje { background: #F5EBE2; color: #C25A00; }
+
+/* Wyśrodkowane na mobile, left-align od 1024px — patrz blok niżej.
+   max-width 480px — dobra praktyka czytelności to ok. 45-75 znaków w linii;
+   przy 17px .feature-copy p to ~480px. Od 1024px (2 kolumny) max-width
+   resetowany w bloku niżej, kolumnę ogranicza już grid. */
+.feature-copy {
+  text-align: center;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.feature-copy h3 {
+  margin: 0 0 12px;
+  /* Ten sam rozmiar, interlinia i tracking co nagłówek banera „Dołącz do
+     Skautów Hyc!" (.scouts-cta h2): jedna skala dla nagłówków sekcji. */
+  font-size: clamp(32px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+  /* pretty, nie balance — na desktopie (2 linie) balance rozkłada WSZYSTKIE
+     linie równomiernie, co przy krótkim nagłówku daje dwie sztucznie
+     skrócone linie zamiast naturalnego zapełnienia pierwszej. pretty
+     zostawia zachłanny wrap (pierwsza linia pełna) i pilnuje tylko sieroty
+     na ostatniej. */
+  text-wrap: pretty;
+}
+/* Na mobile kolumna jest dużo węższa, więc te same nagłówki łamią się na
+   3-4 linie — pretty (zachłanny wrap) tam zostawiał bardzo krótkie środkowe
+   linie (np. jedno słowo), co wyglądało nienaturalnie. balance rozkłada
+   słowa równo między liniami, dokładnie to, do czego jest pomyślany przy
+   wielolinijkowych nagłówkach. */
+@media (max-width: 760px) {
+  /* Podłoga 32px (clamp wyżej) przy wąskiej kolumnie (~271px) łamała zdania
+     na 3-4 linie z bardzo krótką linią w środku (np. jedno słowo, 95-113px)
+     — zmierzone jako wyraźnie gorsze niż mniejszy font. 26px mieści większość
+     nagłówków w 2 liniach, najdłuższy w 3, bez sierotek w środku. */
+  .feature-copy h3 { font-size: 26px; text-wrap: balance; }
+}
+.feature-copy p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--bark);
+}
+.feature-copy p strong,
+.faq-subheading strong { font-weight: 700; }
+/* Dawniej .feature-copy dostawał tu własne +16px paddingu, bo jedynym
+   obramowaniem był gutter .wrap (20px). Teraz cały bullet leży w kaflu
+   z własnym paddingiem 24px (patrz .feature-row) — pełne dawne 16px na to
+   dokładane dawało realną szerokość tekstu ~250px (linie nienaturalnie
+   krótkie); zero dodatku dawało pełne 327px (linie zbyt długie). 8px to
+   środek między tymi dwoma skrajnościami. */
+@media (max-width: 760px) {
+  .feature-copy { padding-left: 8px; padding-right: 8px; }
+}
+
+
+/* ---- FAQ ----
+   Nagłówek w lewej kolumnie, accordion w prawej. Natywny <details>/<summary>
+   zamiast JS-owego akordeonu — focus, klawiatura i stan otwarcia za darmo,
+   ta sama filozofia co <dialog> w modalach wyżej. */
+
+/* ---- Partnerstwa ---- */
+.partnerships {
+  margin-top: 120px;
+  margin-bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+.partnerships-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F6F2E9;
+  border-radius: 20px;
+  padding: 24px;
+}
+.partnerships-logo img {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+}
+.partnerships-btn { margin-top: 28px; }
+
+.faq {
+  margin-top: 96px;
+  /* Sticky .topbar zasłaniał nagłówek po skoku z #faq w menu — kotwica bez
+     tego lądowała pod paskiem. 128px = wysokość paska (48 logo + 2×24
+     padding) plus zapas na oddech. */
+  scroll-margin-top: 128px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+/* Nagłówek + podtytuł nie mają się rozciągać na całą szerokość w
+   single-column — rzędy accordionu na pełną szerokość zostają, to normalny
+   wzorzec. Od 640px, żeby na wąskim mobile tekst dalej korzystał z pełnej
+   szerokości ekranu. */
+@media (min-width: 640px) {
+  .faq-intro { max-width: 440px; }
+}
+.faq-heading {
+  margin: 0;
+  /* Ten sam krój co nagłówki bulletów (.feature-copy h3) i baneru Skautów. */
+  font-size: clamp(32px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.faq-subheading {
+  margin: 12px 0 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--bark);
+}
+.faq-intro .about-link { margin-top: 20px; }
+/* max-width: w jednej kolumnie (do 1023px) lista rozciągała się do ~745px, czyli
+   ok. 85 znaków w linii — powyżej zalecanych 45–75. 600px daje ok. 70. */
+.faq-list { display: flex; flex-direction: column; max-width: 600px; }
+.faq-item {
+  border-bottom: 1px solid rgba(138, 128, 112, 0.24);
+}
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--espresso);
+  cursor: pointer;
+  list-style: none;
+}
+/* Chrome/Safari rysują też domyślny trójkąt obok `list-style: none` na
+   Webkit — trzeba zdjąć go osobnym selektorem, sama właściwość nie starcza. */
+.faq-item summary::-webkit-details-marker { display: none; }
+/* opacity, nie zmiana koloru — spójne z resztą hoverów na stronie
+   (.topbar-nav a, .about-link): przyciemnienie tego samego koloru, nie skok
+   na inny odcień. */
+.faq-item summary { transition: opacity 160ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .faq-item summary:hover { opacity: 0.7; }
+}
+.faq-chevron {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--bark);
+  transition: transform 200ms var(--ease-out);
+}
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer {
+  margin: 0;
+  padding: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--bark);
+}
+
+/* ---- "Pobierz Hyc!" (pobierz.html) ----
+   Strona docelowa nav-CTA — osobna podstrona, nie modal, z tymi samymi
+   batonami/modalami co hero na stronie głównej (patrz komentarz
+   w pobierz.html). Wyśrodkowane w całości — jedyna sekcja na stronie, więc
+   brak sąsiada do wyrównania w kolumnę, jak w .hero. */
+/* Wyśrodkowana bardziej w pionie względem całej wysokości ekranu (nie tylko
+   przyklejona pod topbarem) — jedyna treść strony, stopka zostaje osobno pod
+   spodem. `.wrap > main` domyślnie ma `justify-content: flex-start` (patrz
+   komentarz przy tej regule), tu to jedyna podstrona bez sąsiedniej kolumny,
+   więc nadpisanie na tej jednej stronie jest bezpieczne. */
+body.page-pobierz .wrap > main { justify-content: center; }
+.pobierz-hero {
+  margin: 0 auto;
+  padding: 40px 0 80px;
+  max-width: 640px;
+  text-align: center;
+}
+.pobierz-hero h1 {
+  margin: 0 0 16px;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.pobierz-hero .hero-tags { max-width: none; }
+.pobierz-hero .stores { justify-content: center; }
+
+/* ---- "O aplikacji" (o-aplikacji.html) ----
+   Wąska wyśrodkowana kolumna tekstu (nie karty jak feature-list — to strona
+   do czytania), potem sekcja zespołu, na końcu kontakt. */
+.about-hero {
+  /* width:100% jest konieczne — bez niej box jako dziecko flex-column
+     (.wrap > main) dostaje szerokość z WŁASNEJ treści (max-content), bo
+     auto-marginy w osi poprzecznej tłumią stretch. Bez tego sekcja z krótszym
+     tekstem (Kontakt) wychodziła węższa niż Hero/Zespół mimo tego samego
+     max-width. width:100% wymusza sztywne 640px (capped przez max-width)
+     niezależnie od treści — to jedyny sposób na identyczne centrowanie we
+     wszystkich trzech sekcjach.
+     Odstęp od paska ujednolicony z .contact-hero (48px mobile / 80px
+     desktop, patrz override ≥760px niżej). */
+  width: 100%;
+  margin: 48px auto 0;
+  max-width: 640px;
+}
+.about-hero h1 {
+  margin: 0 0 32px;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.about-body p {
+  margin: 0 0 20px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+.about-body p:last-child { margin-bottom: 0; }
+.about-body strong,
+.about-team-text strong { font-weight: 700; }
+
+.about-team,
+.about-contact {
+  width: 100%;
+  margin: 32px auto 0;
+  max-width: 640px;
+}
+.about-team h2,
+.about-contact h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--espresso);
+}
+.about-team-text {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+
+.about-contact { padding-bottom: 80px; }
+.about-contact p { margin: 0 0 20px; font-size: 17px; line-height: 1.6; color: var(--bark); }
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+.about-link svg { width: 18px; height: 18px; }
+.about-link:hover { opacity: 0.7; }
+
+/* ---- "Kontakt" (kontakt.html) ----
+   Dwie kolumny jak .faq: nagłówek+tekst z lewej, lista z prawej. Ikony marek
+   prawdziwe (nie generyczne Feather-style). */
+.contact-hero {
+  margin: 48px auto 80px;
+  max-width: 640px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+.contact-intro h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.contact-intro p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+/* <ul> bez resetu UA — margin-block:1em i padding-inline-start:40px nigdy
+   nie były wyzerowane. Efekt: lista siadała 16px niżej niż kolumna z h1
+   (align-items:start w gridzie 2-kolumnowym nie ratuje, bo to margines
+   wewnątrz komórki grida, nie luka gridu) i była wcięta 40px w prawo. */
+.contact-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.contact-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(138, 128, 112, 0.24);
+}
+.contact-list-item:first-child { padding-top: 0; }
+.contact-meta { display: flex; flex-direction: column; gap: 4px; }
+.contact-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--espresso);
+}
+.contact-icon { width: 14px; height: 14px; flex-shrink: 0; }
+.contact-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #7a7266;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contact-list-item a {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+/* E-mail nie jest klikalny — sam tekst, nie link, więc dostaje osobną klasę
+   zamiast dziedziczyć zielony .contact-list-item a. */
+.contact-value { font-size: 17px; font-weight: 600; color: var(--espresso); }
+.contact-list-item a:hover { opacity: 0.7; }
+
+/* ---- Footer ---- */
+footer {
+  margin-top: 64px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(138, 128, 112, 0.24);
+  font-size: 13px;
+  color: var(--bark);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: center;
+}
+footer a {
+  color: var(--bark);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+/* Podkreślenie zamienione na zmianę koloru: podkreślenie skacze o piksel
+   w pionie i rozjeżdża linię stopki przy najechaniu. */
+footer a:hover { color: var(--espresso); }
+footer .spacer { flex: 1 1 auto; }
+
+/* ---- Desktop layout ---- */
+@media (min-width: 760px) {
+  /* Jawna wartość w skali z bazą (44 -> 48 -> 52px, patrz blok ≥1100px), nie
+     fluid clamp — patrz uzasadnienie przy h1 bazowym. */
+  h1 { font-size: 48px; }
+  /* Spójne z .contact-hero (patrz ta reguła niżej) — obie strony ten sam
+     odstęp od paska na desktopie. */
+  .about-hero { margin-top: 80px; }
+  .feature-list { margin-top: 120px; margin-bottom: 80px; }
+  /* Kafle wciąż jeden pod drugim (do 1023px): odstęp niewiele większy niż na mobile. */
+  .feature-row + .feature-row { margin-top: 40px; }
+  footer { margin-top: 96px; }
+  /* Szlak ma pod tekstem własną sporą pustkę (wysoki artboard), więc tu
+     starczy mniej — 200px dawało odstęp >400px licząc od ostatniej widocznej
+     linii tekstu do baneru. */
+  .scouts-cta { margin-top: 120px; }
+  .scouts-cta-inner { padding: 110px 40px; }
+  .faq { margin-top: 180px; }
+}
+
+/* ---- Dwie kolumny: feature bullets / FAQ / kontakt ----
+   Próg 1024px, nie 760px — 760px ściskał treść na tabletach/wąskich
+   laptopach (kolumna tekstu i kolumna grafiki/accordionu miały za mało
+   miejsca między 760-1023px). */
+@media (min-width: 1024px) {
+  .feature-row {
+    /* Kolumny muszą być RÓWNE (1fr 1fr), nie calc(50%-68px) asymetryczne —
+       tylko równe kolumny z tym samym gap co .faq (56px) w tym samym
+       kontenerze (.wrap) dają start drugiej kolumny na identycznym punkcie
+       co prawa kolumna FAQ, bez osobnego calc. */
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    /* Kafel całego bulletu jest WYŁĄCZNIE mobile (patrz baza wyżej) — od
+       2 kolumn podkład wraca do samej grafiki (.feature-media niżej). */
+    background: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  /* Ciasny odstęp (32/40px) jest sprawą sztaplowanych kafli na mobile —
+     w dwóch kolumnach wraca pełny oddech między rzędami. */
+  .feature-row + .feature-row { margin-top: 110px; }
+  /* Reset centrowania z mobile — w 2 kolumnach grafika/pigułka/tekst wracają
+     do left/right-align właściwego układowi obok siebie. Karta/podkład (tło,
+     zaokrąglenie, padding, stała wysokość+object-fit) to tu znowu wyłącznie
+     sprawa .feature-media, nie całego rzędu. */
+  .feature-media {
+    background: #F6F2E9;
+    border-radius: 20px;
+    padding: 24px;
+    box-sizing: border-box;
+    margin-right: 0;
+    max-width: none;
+    /* `height:auto` skalowałoby wysokość razem z szerokością kolumny —
+       karta w rzędzie "normalnym" (wide) wychodziłaby wyższa niż w reverse,
+       mimo tego samego obrazka (user: "nierówne"). Stała wysokość +
+       `object-fit:contain` trzyma proporcję niezależnie od szerokości. */
+    height: 280px;
+    object-fit: contain;
+  }
+  .feature-tags { justify-content: flex-start; }
+  /* FAQ i Partnerstwa w dwóch kolumnach dopiero od 1024px. */
+  .faq,
+  .partnerships {
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .faq,
+  .partnerships { align-items: start; }
+  .partnerships { margin-top: 200px; }
+  .partnerships-logo { justify-content: center; /* already set in base */ }
+  .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
+  /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
+     Kolumny .feature-row są 1fr 1fr (równe), więc reverse dziedziczy ten sam
+     podział — order na dzieciach robi całą robotę zamiany miejsc, a DOM/
+     czytnik ekranu nadal czyta grafikę przed tekstem mimo wizualnej zamiany. */
+  .feature-row--reverse .feature-media { order: 2; }
+  .feature-row--reverse .feature-copy { order: 1; }
+  .contact-hero {
+    max-width: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin: 80px auto 120px;
+    align-items: start;
+  }
+}
+
+/* ---- Intro hero (sekwencja jak na cooldock.app) ----
+   Kolejność: tło -> piny po kolei -> nagłówek -> podtytuł -> przyciski ->
+   na końcu z dołu wyjeżdża telefon. Napisy: wejście jak tam, czyli samo
+   rozjaśnienie + przesunięcie o 30px w górę (właściwość `translate`, nie
+   `transform`, więc nie koliduje ze scrubem scrolla), 1s, krzywa
+   cubic-bezier(.25,.75,.25,1). main.js dodaje .hero-intro (stan wyjściowy:
+   wszystko ukryte), a po zdekodowaniu tła .hero-ready (start animacji). Bez
+   JS i przy „ogranicz ruch" hero jest od razu cały. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-intro:not(.hero-ready) .hero-img,
+  .hero-intro:not(.hero-ready) .pin,
+  .hero-intro:not(.hero-ready) .hero-copy > *,
+  .hero-intro:not(.hero-ready) .hero-phone { opacity: 0; }
+  /* Nagłówek rozbity na słowa (main.js): sam kontener jest widoczny, ukryte
+     są słowa. */
+  .hero-intro:not(.hero-ready) .hero-copy > h1.is-split { opacity: 1; }
+  .hero-intro:not(.hero-ready) .hw { opacity: 0; }
+
+  .hero-ready .hero-img { animation: hero-bg-in 1100ms ease-out backwards; }
+  .hero-ready .hero-copy > * {
+    animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+  }
+  /* Bez pinów (wszystko poza układem desktopowym) nic nie wypełnia luki
+     między tłem a napisem, więc cały ciąg rusza 1,4 s wcześniej (user 1029:
+     „długo widać samo tło”). Desktop zeruje przesunięcie niżej. */
+  :root { --intro-t0: -1400ms; }
+  .hero-ready .hero-copy > h1 { animation-delay: calc(2100ms + var(--intro-t0)); }
+  .hero-ready .hero-copy > h1.is-split { animation: none; }
+  .hero-ready .hero-copy > .hero-tags { animation-delay: calc(3150ms + var(--intro-t0)); }
+  .hero-ready .hero-copy > .stores { animation-delay: calc(3400ms + var(--intro-t0)); }
+  /* „Hyc!" wyskakuje pierwsze (pop z przestrzałem, lekki obrót i rozmycie,
+     jak piny), potem pozostałe słowa wchodzą po kolei: rozjaśnienie, 0,45em
+     w górę i zdejmowane rozmycie, co 95ms. */
+  .hero-ready .hw {
+    animation: hero-word-in 750ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(2700ms + var(--intro-t0) + (var(--wi, 1) - 1) * 95ms);
+  }
+  .hero-ready .hw--lead {
+    animation: hero-lead-pop 950ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
+    animation-delay: calc(2100ms + var(--intro-t0));
+    transform-origin: 30% 85%;
+  }
+  .hero-ready .hero-phone {
+    animation: hero-phone-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(3500ms + var(--intro-t0));
+  }
+  /* Menu wyjeżdża z góry w tej samej chwili, w której z dołu wjeżdża telefon
+     (klasy dostaje .topbar od main.js, tylko na stronie głównej). */
+  .topbar.hero-intro:not(.hero-ready) .topbar-inner { opacity: 0; }
+  .topbar.hero-ready .topbar-inner {
+    animation: hero-nav-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(3500ms + var(--intro-t0));
+  }
+}
+/* Pin-drop tylko na desktopie. */
+@media (prefers-reduced-motion: no-preference) and (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  :root { --intro-t0: 0ms; }
+  .hero-ready .pin {
+    opacity: 1;
+    animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
+    animation-delay: calc(700ms + var(--i) * 190ms);
+  }
+}
+/* Telefon (≤767px): piny całkowicie ukryte i nieładowane (display:none blokuje fetch obrazków webp). */
+@media (max-width: 767px) {
+  .hero-pins { display: none; }
+}
+@keyframes hero-bg-in { 0% { opacity: 0; } }
+@keyframes hero-text-in { 0% { opacity: 0; translate: 0 30px; } }
+@keyframes hero-phone-in { 0% { opacity: 0; translate: 0 24vh; } }
+.hw { display: inline-block; }
+@keyframes hero-word-in {
+  0% { opacity: 0; translate: 0 0.45em; }
+}
+@keyframes hero-lead-pop {
+  0% { opacity: 0; scale: 0.2; rotate: -14deg; }
+  55% { opacity: 1; scale: 1.5; rotate: 3deg; }
+  78% { scale: 0.94; rotate: -1.5deg; }
+}
+@keyframes hero-nav-in { 0% { opacity: 0; translate: 0 -60px; } }
+
+/* ---- Wejście strony ----
+   Kaskada zamiast jednoczesnego pojawienia się wszystkiego: oko dostaje
+   kolejność czytania (nagłówek → treść → przyciski), zamiast jednego błysku.
+   Odstępy 40-60ms — dłuższe sprawiają, że strona wydaje się wolna.
+
+   CAŁOŚĆ siedzi w `no-preference`, nie w globalnym resecie ruchu. Gdyby stan
+   początkowy (opacity: 0) żył na zewnątrz, użytkownik z „ogranicz ruch"
+   dostałby stronę, na której animacja jest wyłączona, a treść zostaje
+   NIEWIDOCZNA — animacja jest jedyną rzeczą, która by ją odsłoniła. */
+@media (prefers-reduced-motion: no-preference) {
+  /* `> footer` celowo: tylko stopka strony, nie inne elementy <footer>. */
+  .wrap > footer {
+    animation: rise 620ms var(--ease-out) backwards;
+  }
+  .wrap > footer { animation-delay: 450ms; }
+}
+
+/* ---- Pojawianie elementów przy scrollu ----
+   Minimalnie: element wjeżdża 24px z dołu i się rozjaśnia (opacity + transform,
+   nic więcej), 650ms z krzywą „expo out", raz, gdy wchodzi w ekran. Klasę
+   .reveal dokłada main.js TYLKO elementom spoza pierwszego ekranu i tylko
+   przy braku „ogranicz ruch" — bez JS wszystko jest widoczne od razu. Po
+   zakończeniu klasy są zdejmowane, żeby nie blokowały hoverów. */
+:root {
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Pozwala animować `height: auto` (rozwijanie FAQ) tam, gdzie przeglądarka
+     to umie; gdzie nie, odpowiedź po prostu otwiera się od razu. */
+  interpolate-size: allow-keywords;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 650ms var(--ease-reveal),
+      transform 650ms var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.is-in { opacity: 1; transform: none; }
+
+  /* FAQ: płynne rozwijanie odpowiedzi (::details-content, Chrome/Safari
+     nowsze; starsze ignorują regułę). Strzałka już się obraca wyżej. */
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 320ms var(--ease-out),
+      content-visibility 320ms allow-discrete;
+  }
+  .faq-item[open]::details-content { block-size: auto; }
+}
+/* ---- Ruch grafik przy bulletach ----
+   Warstwy .art-* to wycinki PNG i proste kształty wokół niego. .is-playing daje
+   main.js, gdy grafika wjedzie w ekran. Ruch sam staje przed upływem 5 s
+   (WCAG 2.2.2, bez przycisku pauzy). Tylko transform i opacity. Wyjątki:
+   dym nad ogniskiem faluje przez <animate> na ścieżce (obrys z oryginału,
+   Safari nie animuje `d` w CSS), a zachód słońca trwa 7 s na życzenie usera
+   i zostaje za górami (forwards), aż grafika wyjedzie z ekranu.
+   Chmura, ogień, apteczka i krzyż tylko rosną od własnego obrysu (przesunięcie
+   ogniska mniejsze niż przyrost szerokości), więc zawsze zakrywają to, co jest
+   namalowane pod nimi. Skala poniżej 1 albo skew odsłoniłyby oryginał. */
+.feature-art image, .feature-art g, .feature-art path, .feature-art rect,
+.feature-art ellipse, .feature-art circle { transform-box: fill-box; transform-origin: 50% 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  /* Każda kropla startuje i kończy w miejscu z oryginału, więc deszcz rusza i staje kroplami. */
+  .is-playing .art-kropla { animation: art-kropla 1.3s linear 3; }
+  .is-playing .art-kropla:nth-of-type(1) { animation-delay: 0s; }
+  .is-playing .art-kropla:nth-of-type(2) { animation-delay: 0.1s; }
+  .is-playing .art-kropla:nth-of-type(3) { animation-delay: 0.05s; }
+  .is-playing .art-kropla:nth-of-type(4) { animation-delay: 0.15s; }
+  .is-playing .art-kropla:nth-of-type(5) { animation-name: art-kropla-bok; animation-delay: 0.2s; }
+  .is-playing .art-kropla:nth-of-type(6) { animation-delay: 0.65s; }
+  .is-playing .art-kropla:nth-of-type(7) { animation-delay: 0.4s; }
+  .is-playing .art-kropla:nth-of-type(8) { animation-name: art-kropla-bok; animation-delay: 0s; }
+  .is-playing .art-kropla:nth-of-type(9) { animation-name: art-kropla-bok; animation-delay: 0.75s; }
+  .is-playing .art-kropla:nth-of-type(10) { animation-name: art-kropla-bok; animation-delay: 0.5s; }
+  /* Czubki na chmurze są tylko w spoczynku: krople lecą za nią. */
+  .is-playing .art-czubki { animation: art-czubki 4.8s linear; }
+  /* Krople bez miejsca w oryginale: w spoczynku czekają nad przycięciem. */
+  .is-playing .art-ulewa path { animation: art-ulewa 0.9s linear 4; }
+  .is-playing .art-ulewa path:nth-of-type(3n+2) { animation-delay: 0.3s; }
+  .is-playing .art-ulewa path:nth-of-type(3n) { animation-delay: 0.6s; }
+  .is-playing .art-chmura { transform-origin: 50% 100%; animation: art-chmura 2.4s ease-in-out 2; }
+  .is-playing .art-slonce { animation: art-zachod 7s ease-in-out forwards; }
+  .is-playing .art-slonce-zar { animation: art-zar 7s ease-in forwards; }
+  .is-playing .art-dym { transform-origin: 50% 100%; animation: art-dym 4.8s ease-in-out; }
+  .is-playing .art-struga { animation: art-struga 0.9s linear 4; }
+  .is-playing .art-struga--2 { animation-delay: 0.3s; }
+  .is-playing .art-struga--3 { animation-delay: 0.6s; }
+  .is-playing .art-krag { animation: art-krag 1.8s ease-out 2; }
+  .is-playing .art-krag--2 { animation-delay: 0.9s; }
+  .is-playing .art-bryzg { --dx: 12px; animation: art-bryzg 0.9s ease-out 4; }
+  .is-playing .art-bryzg--2 { --dx: -12px; animation-delay: 0.3s; }
+  .is-playing .art-bryzg--3 { --dx: 4px; animation-delay: 0.6s; }
+  .is-playing .art-ogien { transform-origin: 50% 100%; animation: art-ogien 1.2s ease-in-out 4; }
+  .is-playing .art-srodek { transform-origin: 50% 100%; animation: art-srodek 0.8s ease-in-out 6; }
+  .is-playing .art-iskra { --dx: 10px; animation: art-iskra 1.2s ease-out 3; }
+  .is-playing .art-iskra--2 { --dx: -8px; animation-delay: 0.4s; }
+  .is-playing .art-iskra--3 { --dx: 4px; animation-delay: 0.8s; }
+  .is-playing .art-apteczka { transform-origin: 50% 100%; animation: art-apteczka 2.4s ease-in-out 2; }
+  .is-playing .art-krzyz { animation: art-krzyz 2.4s ease-in-out 2; }
+}
+/* Lot w dół chowa się za dachem, powrót za chmurą: clipPath kończy się w jej środku. */
+@keyframes art-kropla {
+  50% { transform: translate(-70px, 110px); opacity: 1; }
+  50.01% { transform: translate(70px, -110px); opacity: 1; }
+}
+/* Krople spoza chmury nie mają za czym się schować, więc wchodzą wygaszeniem. */
+@keyframes art-kropla-bok {
+  50% { transform: translate(-70px, 110px); opacity: 1; }
+  50.01% { transform: translate(70px, -110px); opacity: 0; }
+  78% { opacity: 0; }
+  90% { opacity: 1; }
+}
+@keyframes art-czubki { 3%, 80% { opacity: 0; } 85% { opacity: 1; } }
+@keyframes art-ulewa { to { transform: translate(-108px, 169px); } }
+@keyframes art-chmura { 50% { transform: scale(1.05); } }
+@keyframes art-zachod { to { transform: translateY(88px); } }
+@keyframes art-zar { 30% { opacity: 0.2; } to { opacity: 1; } }
+@keyframes art-dym { 50% { transform: scale(1.04, 1.08); } }
+@keyframes art-struga {
+  0% { transform: none; opacity: 0; }
+  15%, 75% { opacity: 0.9; }
+  100% { transform: translate(3px, 58px); opacity: 0; }
+}
+@keyframes art-krag {
+  0% { transform: scale(1.1); opacity: 0; }
+  25% { opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes art-bryzg {
+  0% { transform: none; opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(var(--dx), -14px); opacity: 1; }
+  100% { transform: translate(calc(var(--dx) * 1.5), 2px); opacity: 0; }
+}
+@keyframes art-ogien {
+  25% { transform: translateX(-2px) scale(1.12, 1.2); }
+  50% { transform: translateX(1.5px) scale(1.06, 1.1); }
+  75% { transform: translateX(2px) scale(1.12, 1.16); }
+}
+@keyframes art-srodek {
+  35% { transform: scale(1.14, 1.3); }
+  70% { transform: scale(1.04, 1.12); }
+}
+@keyframes art-iskra {
+  0% { transform: none; opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--dx), -56px); opacity: 0; }
+}
+/* Podwójne uderzenie serca. */
+@keyframes art-apteczka {
+  14% { transform: scale(1.05); }
+  28% { transform: scale(1.015); }
+  42% { transform: scale(1.06); }
+  70% { transform: none; }
+}
+@keyframes art-krzyz {
+  14% { transform: scale(1.12); }
+  28% { transform: scale(1.04); }
+  42% { transform: scale(1.15); }
+  70% { transform: none; }
+}
+
+/* ---- CTA "Dołącz do Skautów" — karta na zdjęciu ---- */
+.scouts-cta {
+  border-radius: var(--radius-lg, 24px);
+  overflow: hidden;
+  background-image: linear-gradient(rgba(249, 246, 242, 0.65), rgba(249, 246, 242, 0.65)), url("assets/skauci-bg.jpg?v=2");
+  background-size: cover;
+  background-position: center;
+}
+/* margin-top osobno, w media query zamiast w regule bazowej — ta reguła
+   bazowa stoi w pliku PO bloku ≥760px (patrz wyżej), więc przy równej
+   swoistości zawsze by go przebijała niezależnie od szerokości okna
+   (kolejność w źródle rozstrzyga remis). Stąd mobile dostaje własny zakres
+   zamiast współdzielić "bazową" wartość z desktopem. */
+@media (max-width: 759px) {
+  /* Szlak ma pod tekstem własne ~100px pustki (wysoki artboard), więc tu
+     starczy dużo mniej niż na desktopie (200px, patrz blok ≥760px) —
+     inaczej odstęp od ostatniej widocznej linii do baneru rośnie do
+     grubo ponad 100px. */
+  .scouts-cta { margin-top: 16px; }
+}
+.scouts-cta-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 96px 24px;
+  text-align: center;
+}
+.scouts-cta h2 {
+  margin: 0 0 16px;
+  /* Dolna granica 32px pozwala nagłówkowi zawijać się do 2 linii zamiast
+     wymuszać jedną. */
+  font-size: clamp(32px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.scouts-cta p {
+  margin: 0 0 28px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+@media (max-width: 759px) {
+  .scouts-cta h2 { font-size: 26px; text-wrap: balance; }
+}
+
+/* ---- Sekcja ze szlakiem ----
+   „Artboard" o stałych proporcjach skalowany z szerokością: tekst i szlak
+   żyją w tym samym układzie współrzędnych, więc zawsze się zgadzają. Desktop
+   (≥700px) 1695x1025 jak w makiecie, wąski ekran osobny pionowy układ 390x590, ścieżka z makiety obrócona o 90°
+   z własną, krótszą ścieżką. Kontener `cqw` = 1% szerokości artboardu.
+   Pełna szerokość okna (jak hero), kadr wyśrodkowany i ograniczony do 1695px,
+   żeby na bardzo szerokich ekranach tekst nie rósł bez końca. Bez własnego
+   tła: sekcja leży na kremie strony. */
+.trail {
+  --trail-w: min(100vw, 1695px);
+  position: relative;
+  width: var(--trail-w);
+  margin: 64px 0 0 calc(50% - var(--trail-w) / 2);
+  aspect-ratio: 390 / 590;
+  container-type: inline-size;
+}
+.trail-stage {
+  position: absolute;
+  inset: 0;
+  /* `stroke-dashoffset` (niżej) nie jest kompozytowalny jak transform/opacity
+     — każda klatka animacji rysowania szlaku to realny repaint geometrii
+     ścieżki SVG na głównym wątku. Bez containment ten repaint mógł wymuszać
+     przeliczenie też u sąsiadów (kolumna tekstu), co w połączeniu ze
+     scrollem na Safari/iOS dawało zgłoszone zacinanie/przeskoki akurat na
+     wysokości tej sekcji. `contain: paint` zamyka efekt repaintu w tym
+     poddrzewie. */
+  contain: paint;
+}
+/* Na mobile szlak ma się zmieścić w tej samej kolumnie co tekst (20px gutter
+   po obu stronach), nie rozlewać się na cały ekran — inaczej wystaje poza
+   tekst bardziej niż na desktopie, gdzie artboard jest już skalowany do
+   tekstu (patrz komentarz przy --trail-w w media query niżej). */
+.trail-stage--narrow { inset: 0 20px; }
+.trail-stage--wide { display: none; }
+.trail-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.trail-copy {
+  position: absolute;
+  /* 20px — ten sam gutter co .wrap na resztę strony (nie węziej). Działa jako
+     stały px, nie %, bo .trail na mobile to zawsze 100vw: dokładny odpowiednik
+     gutteru niezależnie od szerokości ekranu. */
+  left: 20px;
+  /* Tekst wyśrodkowany w pionie na środku artboardu (liczba wierszy może się
+     zmienić bez rozjeżdżania z szlakiem). */
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(100% - 40px);
+}
+.trail-title,
+.trail-text {
+  margin: 0;
+  /* Własny rytm zawijania: łamania i rozmiar jak w makiecie, nie globalny
+     `text-wrap: balance` nagłówków / `pretty` akapitów. */
+  text-wrap: wrap;
+  font-size: 11.4cqw;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--espresso);
+}
+.trail-title { text-wrap: balance; }
+.trail-text { text-wrap: pretty; }
+.trail-br { display: none; }
+/* Łamanie mobile i desktop różni się miejscem (inny układ artboardu), więc
+   każdy ma własny zestaw <br> w HTML — oba ułożone ręcznie pod zmierzoną
+   szerokość kolumny, bo natural wrap (nawet `pretty`) dawał nierówne wiersze
+   (jedna linia 312px, sąsiednia 221px). */
+.trail-br-m { display: inline; }
+@media (min-width: 700px) {
+  .trail {
+    /* Artboard skaluje się z ROZMIAREM TEKSTU, nie z oknem: font = rozmiar
+       nagłówka hero (min(76/1670 szerokości okna, 70px)), a szerokość kadru
+       to ten font x 1695/92 (proporcje makiety: 92px tekstu na kadr 1695px).
+       Dzięki temu szlak ma zawsze te same proporcje względem wierszy tekstu,
+       co w oryginale, i nie wystaje ponad tekst bardziej niż tam. */
+    --trail-fs: min(4.551vw, 70px);
+    --trail-w: calc(var(--trail-fs) * 18.4239);
+    margin-top: 40px;
+    aspect-ratio: 1695 / 1025;
+  }
+  .trail-stage--wide { display: block; }
+  .trail-stage--narrow { display: none; }
+  /* Pozycja tekstu 1:1 z makiety (222/1695 od lewej, 225/1025 od góry). */
+  .trail-copy { left: 13.1%; top: 47.05%; width: 78.4%; }
+  .trail-title,
+  .trail-text { font-size: 5.427cqw; line-height: 1.4; white-space: nowrap; }
+  .trail-br { display: inline; }
+  .trail-br-m { display: none; }
+}
+
+/* Rysowanie szlaku: maska z linią o pełnej (znormalizowanej) długości 1000.
+   Domyślnie szlak jest narysowany w całości (bez JS, „ogranicz ruch"). main.js
+   dodaje .is-armed (szlak ukryty) i po wjechaniu sekcji w ekran .is-drawn
+   (przejście do zera). */
+.trail-reveal { stroke-dasharray: 1000; stroke-dashoffset: 0; }
+.trail.is-armed .trail-reveal { stroke-dashoffset: 1000; }
+.trail.is-armed.is-drawn .trail-reveal {
+  stroke-dashoffset: 0;
+  /* 900ms (próba skrócenia) cofnięte — wyglądało gorzej i NIE rozwiązywało
+     skakania scrolla (potwierdzone przez usera), więc nie było warte
+     kompromisu wizualnego. Wraca 2200ms. */
+  transition: stroke-dashoffset 2200ms cubic-bezier(0.55, 0, 0.35, 1);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  /* Wyłączenie animacji NIE zatrzymuje <video> — main.js nie odpala nagrania
+     przy „ogranicz ruch", zostaje sam poster. */
+}

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="tdm-reservation" content="1">
+  <title>Hyc! Wszystko czego potrzebujesz na szlaku</title>
+  <link rel="canonical" href="https://gethyc.com/">
+  <meta name="description" content="Hyc! to aplikacja na szlak. Jednym przyciskiem znajdziesz najbliższą wiatę, wodę, nocleg, sklep, restaurację albo apteczkę. Dołącz do testów na iOS i Androidzie.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- apple-touch-icon MUSI byc PNG — iOS nie czyta SVG i przy braku rastra
+       robi wlasny zrzut strony jako ikone na ekranie glownym. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <!-- Open Graph / social preview (podgląd linku na sociale) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gethyc.com/">
+  <meta property="og:site_name" content="Hyc!">
+  <meta property="og:title" content="Hyc! Wszystko czego potrzebujesz na szlaku">
+  <meta property="og:description" content="Najbliższa wiata, woda, nocleg, sklep, restauracja i apteczka na Twojej trasie. Dołącz do testów Hyc! na iOS i Androidzie.">
+  <meta property="og:image" content="https://gethyc.com/assets/og-image.jpg?v=20261029">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hyc! Wszystko czego potrzebujesz na szlaku">
+  <meta name="twitter:description" content="Najbliższa wiata, woda, nocleg, sklep, restauracja i apteczka na Twojej trasie. Dołącz do testów Hyc! na iOS i Androidzie.">
+  <meta name="twitter:image" content="https://gethyc.com/assets/og-image.jpg?v=20261029">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" type="image/webp"
+        imagesrcset="assets/hero/hero-bg-1200.webp?v=8 1200w, assets/hero/hero-bg-1800.webp?v=8 1800w, assets/hero/hero-bg-2560.webp?v=8 2560w, assets/hero/hero-bg-3840.webp?v=8 3840w"
+        imagesizes="((max-width: 899px) or (max-aspect-ratio: 13/10)) 170vw, 100vw">
+  <!-- ?v= na CSS i JS jest obowiązkowe — podbij przy każdym wydaniu. Strona
+       stoi na GitHub Pages, które ignorują plik `_headers` (format Netlify/
+       Cloudflare Pages) i serwują wszystko z Cache-Control: max-age=600. Bez
+       wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
+       ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
+       inny zasób. -->
+  <link rel="stylesheet" href="styles.css?v=2026103012">
+</head>
+<body class="page-home">
+  <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
+       i potrzebuje stałej nawigacji do nich. Logo stoi tu, nie w hero. -->
+  <header class="topbar hero-intro">
+    <div class="topbar-inner">
+      <a href="#top" class="topbar-logo" aria-label="Hyc! - strona główna">
+        <img src="assets/logo-69.png?v=2" srcset="assets/logo-69.png?v=2 1x, assets/logo-138.png?v=2 2x, assets/logo-207.png?v=2 3x" alt="Hyc!" width="69" height="32">
+      </a>
+
+      <nav class="topbar-nav" aria-label="Główna nawigacja">
+        <a href="o-aplikacji.html">O aplikacji</a>
+        <a href="#faq">FAQ</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+
+      <!-- Hamburger — bez niego linki na <768px nie miały żadnego sposobu
+           otwarcia (display:none bez przełącznika). Trzecie dziecko obok
+           logo/CTA na mobile (nav chowa się, patrz styles.css). -->
+      <button type="button" class="topbar-burger" aria-expanded="false" aria-controls="mobile-nav" aria-label="Otwórz menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M2.797 18.293V16.018H21.203V18.293ZM2.797 13.138V10.862H21.203V13.138ZM2.797 7.982V5.707H21.203V7.982Z"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6.4 19.191L4.809 17.6L10.409 12.0L4.809 6.4L6.4 4.809L12.0 10.409L17.6 4.809L19.191 6.4L13.591 12.0L19.191 17.6L17.6 19.191L12.0 13.591Z"/></svg>
+      </button>
+
+      <!-- Link na osobną stronę, nie modal TestFlight jak baton na hero — tu
+           dopiero trafią docelowe linki do sklepów, gdy apka będzie tam
+           publicznie dostępna. -->
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html" data-goatcounter-click="index-menu-pobierz">Pobierz</a>
+    </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
+      <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="pobierz.html" data-goatcounter-click="index-menu-pobierz"><span>Pobierz</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+
+    <main>
+      <!-- Hero: scena przypięta (sticky) na czas pierwszego scrolla. Pierwszy
+           ruch w dół dokłada .is-pinned (main.js), a cała animacja (tekst i
+           piny odjeżdżają, tło blednie, telefon wjeżdża i rośnie) to przejście
+           czasowe w CSS.
+           Bez JS albo przy „ogranicz ruch" zostaje statyczny układ: tło z
+           tekstem, telefon pod spodem.
+           Tło, piny i tekst to jedna kompozycja 16:9 skalowana jak `cover`
+           (patrz .hero-scene w styles.css), żeby piny zawsze stały nad swoimi
+           domkami niezależnie od proporcji okna. -->
+      <section class="hero hero-intro" id="top" aria-label="Hyc!">
+        <div class="hero-stage">
+          <div class="hero-bg" aria-hidden="true">
+            <div class="hero-scene">
+              <img class="hero-img"
+                   src="assets/hero/hero-bg-1800.webp?v=8"
+                   srcset="assets/hero/hero-bg-1200.webp?v=8 1200w, assets/hero/hero-bg-1800.webp?v=8 1800w, assets/hero/hero-bg-2560.webp?v=8 2560w, assets/hero/hero-bg-3840.webp?v=8 3840w"
+                   sizes="((max-width: 899px) or (max-aspect-ratio: 13/10)) 170vw, 100vw"
+                   width="3840" height="2160" alt="" fetchpriority="high">
+              <!-- Pozycje i szerokości pinów w % kadru 1670x942 z makiety Figmy
+                   (x/1670, y/942, w/1670); --i to kolejność wejścia od lewej. -->
+              <div class="hero-pins">
+                <span class="pin" style="--x:10.12%;--y:55.52%;--w:3.71%;--i:0"><img src="assets/hero/pin-nocleg.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:26.59%;--y:63.16%;--w:4.37%;--i:1"><img src="assets/hero/pin-wiata.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin pin--woda" style="--x:62.81%;--y:66.99%;--w:2.4%;--i:2"><img src="assets/hero/pin-woda.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:66.17%;--y:73.04%;--w:4.25%;--i:3"><img src="assets/hero/pin-jedzenie.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:75.93%;--y:71.34%;--w:3.23%;--i:4"><img src="assets/hero/pin-apteczka.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:87.37%;--y:65.71%;--w:3.59%;--i:5"><img src="assets/hero/pin-sklep.webp?v=3" alt="" width="176" height="212"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-copy">
+            <h1><span class="accent">Hyc!</span> Wszystko czego <br class="hero-br">potrzebujesz na&nbsp;szlaku</h1>
+            <p class="hero-tags">Przeglądaj mapę z punktami albo jednym Hyc! znajdź na swojej trasie najbliższą wiatę, restaurację, apteczkę, wodę, nocleg lub sklep.</p>
+
+            <div class="stores" id="stores">
+              <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
+                   nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
+                   (TestFlight, potem po powrocie z App Store, Hyc!). Baton
+                   wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
+                   PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button" data-goatcounter-click="index-ios-otworz">
+                <img src="assets/apple.svg" alt="">
+                <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+              </button>
+
+              <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
+                   testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
+                   Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
+                   jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button" data-goatcounter-click="index-android-otworz">
+                <img src="assets/google.svg" alt="">
+                <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Telefon: render z Rotato (ramka + ekran) jako wideo z przezroczystym
+               tłem. Safari/iOS bierze HEVC z alfą (.mov), reszta przeglądarek
+               WebM VP9 z alfą; typ „video/quicktime" omija Chrome, który HEVC
+               odtworzyłby bez przezroczystości. main.js odpala wideo, gdy
+               telefon jest cały widoczny (przy scrollu: postęp >= 0.98) i
+               pauzuje, gdy znika z ekranu. Brak `autoplay` jest celowy, start
+               należy do main.js. -->
+          <div class="hero-phone" role="img" aria-label="Ekran aplikacji Hyc!: trasa do najbliższej bacówki">
+            <video class="phone-video" poster="assets/hero/phone-poster.webp?v=4" muted playsinline preload="metadata">
+              <source src="assets/hero/phone.mov?v=3" type='video/quicktime; codecs="hvc1"'>
+              <source src="assets/hero/phone.webm?v=3" type="video/webm">
+            </video>
+          </div>
+
+          <!-- QR do sklepów: osobny element obok telefonu, bo .hero-phone ma
+               role="img" i ukrywa dzieci przed czytnikami ekranu. Kod prowadzi
+               na stały adres pobierz.html?qr=1, nie do sklepu, więc po
+               publikacji wystarczy edycja config.js. Ukryty, dopóki w
+               config.js nie ma appStore ani playStore, a obrazek dostaje src
+               dopiero na desktopie z myszą, żeby telefon go nie pobierał (main.js).
+               Plik generuje scripts/landing/make_qr.py. -->
+          <div class="qr-card hero-qr" hidden>
+            <p>Zeskanuj i pobierz</p>
+            <img data-src="assets/qr-pobierz.svg" alt="Kod QR prowadzący do pobrania aplikacji Hyc!" width="180" height="180">
+          </div>
+        </div>
+      </section>
+
+      <!-- Grafika w karcie + nagłówek/bullety obok, kolory/fonty własne. -->
+      <section class="feature-list" id="about" aria-labelledby="about-title">
+        <h2 class="visually-hidden" id="about-title">O aplikacji</h2>
+        <!-- 6 bulletów, każdy z własną grafiką (assets/feature/feature-1..6.png,
+             kolejność 1:1 z
+             kolejnością bulletów góra-dół) i własnym tekstem (pytanie +
+             odpowiedź). Grafika to SVG: PNG jako podstawa plus warstwy ruchu
+             (.art-*, styles.css). Kadr spoczynkowy = obrazek bez ruchu. -->
+        <div class="feature-row">
+          <svg class="feature-media feature-art" viewBox="0 0 440 280" width="440" height="280" aria-hidden="true" focusable="false">
+            <clipPath id="art-pod-chmura"><rect y="62" width="440" height="218"/></clipPath>
+            <g clip-path="url(#art-pod-chmura)" fill="none" stroke="#3a6a88" stroke-linecap="round">
+              <path class="art-kropla" stroke-width="4.2" d="M280 78.4L269 96"/>
+              <path class="art-kropla" stroke-width="4.2" d="M319.6 80.7L307.3 100.2"/>
+              <path class="art-kropla" stroke-width="4.2" d="M245.6 86.7L229.4 112.7"/>
+              <path class="art-kropla" stroke-width="4.0" d="M354.3 88.2L341.7 107.8"/>
+              <path class="art-kropla" stroke-width="3.8" stroke-opacity="0.85" d="M378.3 100.1L373.2 108.1"/>
+              <path class="art-kropla" stroke-width="3.8" stroke-opacity="0.7" d="M294.3 103.5L290.7 108.5"/>
+              <path class="art-kropla" stroke-width="4.0" stroke-opacity="0.75" d="M327.5 112.3L317.7 127.5"/>
+              <path class="art-kropla" stroke-width="4.2" d="M363.4 124.6L346.4 151.6"/>
+              <path class="art-kropla" stroke-width="3.4" stroke-opacity="0.8" d="M331.8 132.8L326.6 140.8"/>
+              <path class="art-kropla" stroke-width="3.4" stroke-opacity="0.7" d="M383.3 144.1L380.1 150.1"/>
+              <g class="art-ulewa" stroke-width="4.0">
+                <path d="M300 38l-12 19"/>
+                <path d="M352 38l-12 19"/>
+                <path d="M258 38l-12 19"/>
+                <path d="M330 38l-12 19"/>
+                <path d="M276 38l-12 19"/>
+                <path d="M378 38l-12 19"/>
+                <path d="M250 38l-12 19"/>
+                <path d="M312 38l-12 19"/>
+                <path d="M366 38l-12 19"/>
+                <path d="M288 38l-12 19"/>
+                <path d="M342 38l-12 19"/>
+                <path d="M236 38l-12 19"/>
+              </g>
+            </g>
+            <image class="art-chmura" href="assets/feature/feature-1-chmura.png" x="190" y="6" width="193" height="93"/>
+            <path class="art-czubki" fill="none" stroke="#3a6a88" stroke-width="4.2" stroke-linecap="round" d="M280 78.4L272.6 90.2M319.6 80.7L313.6 90.2M245.6 86.7L243.6 90M354.3 88.2L353 90.2"/>
+            <image href="assets/feature/feature-1-tlo.png" width="440" height="280"/>
+          </svg>
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--schronienia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 10.4004L21.7998 12L12 4.52539L2.2002 12L1 10.4004L12 2L23 10.4004Z"/><circle cx="12" cy="12" r="3"/><path d="M18 20H6V17.5C6 17.5 8.5 16 12 16C15.5 16 18 17.5 18 17.5V20Z"/></svg><span class="feature-tag-label">Schronienia</span></span>
+            </div>
+            <h3>Złapała Cię ulewa lub szukasz miejsca na przerwę?</h3>
+            <p>Jednym przyciskiem poprowadzimy Cię do najbliższej wiaty po drodze lub w dowolnym kierunku</p>
+          </div>
+        </div>
+
+        <div class="feature-row feature-row--reverse">
+          <svg class="feature-media feature-art" viewBox="0 0 440 280" width="440" height="280" aria-hidden="true" focusable="false">
+            <g class="art-slonce">
+              <circle cx="230" cy="81" r="38.5" fill="#fbcb80"/>
+              <circle class="art-slonce-zar" cx="230" cy="81" r="38.5" fill="#ef7f3a" opacity="0"/>
+            </g>
+            <image href="assets/feature/feature-2-tlo.png" width="440" height="280"/>
+          </svg>
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--noclegi"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 18V5H3.81818V13.6667H11.0909V6.73333H18.3636C19.3636 6.73333 20.2197 7.07278 20.9318 7.75167C21.6439 8.43056 22 9.24667 22 10.2V18H20.1818V15.4H3.81818V18H2ZM5.52273 12.0417C4.99242 11.5361 4.72727 10.9222 4.72727 10.2C4.72727 9.47778 4.99242 8.86389 5.52273 8.35833C6.05303 7.85278 6.69697 7.6 7.45455 7.6C8.21212 7.6 8.85606 7.85278 9.38636 8.35833C9.91667 8.86389 10.1818 9.47778 10.1818 10.2C10.1818 10.9222 9.91667 11.5361 9.38636 12.0417C8.85606 12.5472 8.21212 12.8 7.45455 12.8C6.69697 12.8 6.05303 12.5472 5.52273 12.0417Z"/></svg><span class="feature-tag-label">Noclegi</span></span>
+            </div>
+            <h3>Szukasz taniego noclegu na&nbsp;jedną noc?</h3>
+            <p>Zebraliśmy tanie i&nbsp;polecane noclegi przy szlakach i&nbsp;w&nbsp;całej Polsce. Zestawy na GSB, GSS, MSB, The Loop.</p>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <svg class="feature-media feature-art" viewBox="0 0 440 280" width="440" height="280" aria-hidden="true" focusable="false">
+            <image href="assets/feature/feature-3.png" width="440" height="280"/>
+            <ellipse class="art-krag" cx="245" cy="200" rx="32" ry="8" fill="none" stroke="#f1f7f9" stroke-width="3" opacity="0"/>
+            <ellipse class="art-krag art-krag--2" cx="245" cy="200" rx="32" ry="8" fill="none" stroke="#f1f7f9" stroke-width="3" opacity="0"/>
+            <rect class="art-struga" x="240" y="122" width="5" height="24" rx="2.5" fill="#eef6f8" opacity="0"/>
+            <rect class="art-struga art-struga--2" x="246" y="130" width="4" height="20" rx="2" fill="#eef6f8" opacity="0"/>
+            <rect class="art-struga art-struga--3" x="237" y="136" width="4" height="18" rx="2" fill="#eef6f8" opacity="0"/>
+            <circle class="art-bryzg" cx="240" cy="194" r="2.5" fill="#eef6f8" opacity="0"/>
+            <circle class="art-bryzg art-bryzg--2" cx="250" cy="194" r="2.5" fill="#eef6f8" opacity="0"/>
+            <circle class="art-bryzg art-bryzg--3" cx="245" cy="192" r="2" fill="#eef6f8" opacity="0"/>
+          </svg>
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--woda"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.275 19C12.475 18.9833 12.6458 18.9042 12.7875 18.7625C12.9292 18.6208 13 18.45 13 18.25C13 18.0167 12.925 17.8292 12.775 17.6875C12.625 17.5458 12.4333 17.4833 12.2 17.5C11.5167 17.55 10.7917 17.3625 10.025 16.9375C9.25833 16.5125 8.775 15.7417 8.575 14.625C8.54167 14.4417 8.45417 14.2917 8.3125 14.175C8.17083 14.0583 8.00833 14 7.825 14C7.59167 14 7.4 14.0875 7.25 14.2625C7.1 14.4375 7.05 14.6417 7.1 14.875C7.38333 16.3917 8.05 17.475 9.1 18.125C10.15 18.775 11.2083 19.0667 12.275 19ZM6.2875 19.65C4.7625 18.0833 4 16.1333 4 13.8C4 12.1333 4.6625 10.3208 5.9875 8.3625C7.3125 6.40417 9.31667 4.28333 12 2C14.6833 4.28333 16.6875 6.40417 18.0125 8.3625C19.3375 10.3208 20 12.1333 20 13.8C20 16.1333 19.2375 18.0833 17.7125 19.65C16.1875 21.2167 14.2833 22 12 22C9.71667 22 7.8125 21.2167 6.2875 19.65Z"/></svg><span class="feature-tag-label">Woda</span></span>
+              <span class="feature-tag feature-tag--sklepy"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.9749 2C12.1416 2 12.3005 2.04167 12.4505 2.125C12.6003 2.20831 12.7168 2.31697 12.8001 2.4502L17.2005 9H22.0003C22.3335 9.00007 22.5958 9.1338 22.7874 9.40039C22.979 9.667 23.0338 9.9588 22.9505 10.2754L20.3997 19.5254C20.2664 19.9585 20.025 20.313 19.6751 20.5879C19.3251 20.8628 18.9249 21 18.4749 21H5.52472C5.07505 20.9999 4.6753 20.8626 4.3255 20.5879C3.97558 20.313 3.73327 19.9586 3.59991 19.5254L1.05011 10.2754C0.966816 9.95889 1.02079 9.66695 1.21222 9.40039C1.40388 9.13372 1.66697 9 2.0003 9H6.7503L11.1497 2.4502C11.233 2.31686 11.3503 2.20833 11.5003 2.125C11.6502 2.04176 11.8084 2.00002 11.9749 2ZM9.17511 9H14.8001L11.9749 4.7998L9.17511 9Z"/></svg><span class="feature-tag-label">Sklepy</span></span>
+              <span class="feature-tag feature-tag--restauracje"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 21V12.765C6.86333 12.555 6.24583 12.135 5.7475 11.505C5.24917 10.875 5 10.14 5 9.3V3H6.73333V9.3H7.6V3H9.33333V9.3H10.2V3H11.9333V9.3C11.9333 10.14 11.6842 10.875 11.1858 11.505C10.6875 12.135 10.07 12.555 9.33333 12.765V21H7.6ZM16.2667 21V13.8H13.6667V7.5C13.6667 6.255 14.0892 5.19375 14.9342 4.31625C15.7792 3.43875 16.8011 3 18 3V21H16.2667Z"/></svg><span class="feature-tag-label">Restauracje</span></span>
+            </div>
+            <h3>Skończyła Ci się woda i&nbsp;wałówka?</h3>
+            <p>Pokażemy Ci najbliższe źródła, sklepy i&nbsp;restauracje, byś mógł je uzupełnić</p>
+          </div>
+        </div>
+
+        <div class="feature-row feature-row--reverse">
+          <svg class="feature-media feature-art" viewBox="0 0 440 280" width="440" height="280" aria-hidden="true" focusable="false">
+            <image href="assets/feature/feature-4-tlo.png" width="440" height="280"/>
+            <path class="art-dym" d="M370.0 62.0C368.0 62.0 371.2 67.0 371.0 70.0C370.8 73.0 370.5 76.7 369.0 80.0C367.5 83.3 365.0 86.7 362.0 90.0C359.0 93.3 353.8 96.7 351.0 100.0C348.2 103.3 346.3 106.7 345.0 110.0C343.7 113.3 342.8 116.7 343.0 120.0C343.2 123.3 343.8 126.7 346.0 130.0C348.2 133.3 354.0 138.0 356.0 140.0C358.0 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 359.0 140.0C359.2 138.0 358.7 133.3 359.0 130.0C359.3 126.7 359.2 123.3 361.0 120.0C362.8 116.7 366.5 113.3 370.0 110.0C373.5 106.7 379.2 103.3 382.0 100.0C384.8 96.7 386.2 93.3 387.0 90.0C387.8 86.7 387.7 83.3 387.0 80.0C386.3 76.7 385.8 73.0 383.0 70.0C380.2 67.0 372.0 62.0 370.0 62.0Z" fill="#ddd3c0">
+              <animate attributeName="d" begin="indefinite" dur="4.8s" values="M370.0 62.0C368.0 62.0 371.2 67.0 371.0 70.0C370.8 73.0 370.5 76.7 369.0 80.0C367.5 83.3 365.0 86.7 362.0 90.0C359.0 93.3 353.8 96.7 351.0 100.0C348.2 103.3 346.3 106.7 345.0 110.0C343.7 113.3 342.8 116.7 343.0 120.0C343.2 123.3 343.8 126.7 346.0 130.0C348.2 133.3 354.0 138.0 356.0 140.0C358.0 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 359.0 140.0C359.2 138.0 358.7 133.3 359.0 130.0C359.3 126.7 359.2 123.3 361.0 120.0C362.8 116.7 366.5 113.3 370.0 110.0C373.5 106.7 379.2 103.3 382.0 100.0C384.8 96.7 386.2 93.3 387.0 90.0C387.8 86.7 387.7 83.3 387.0 80.0C386.3 76.7 385.8 73.0 383.0 70.0C380.2 67.0 372.0 62.0 370.0 62.0Z;M372.2 62.0C370.2 62.0 374.0 67.0 373.6 70.0C373.2 73.0 372.1 76.7 369.9 80.0C367.8 83.3 364.3 86.7 360.9 90.0C357.4 93.3 352.1 96.7 349.3 100.0C346.5 103.3 345.3 106.7 344.3 110.0C343.3 113.3 343.1 116.7 343.5 120.0C343.9 123.3 344.5 126.7 346.6 130.0C348.7 133.3 354.2 138.0 356.1 140.0C358.0 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 359.1 140.0C359.4 138.0 359.2 133.3 359.6 130.0C360.0 126.7 359.9 123.3 361.5 120.0C363.1 116.7 366.2 113.3 369.3 110.0C372.5 106.7 377.5 103.3 380.3 100.0C383.1 96.7 384.6 93.3 385.9 90.0C387.1 86.7 388.0 83.3 387.9 80.0C387.9 76.7 388.2 73.0 385.6 70.0C383.0 67.0 374.2 62.0 372.2 62.0Z;M374.1 62.0C372.1 62.0 374.1 67.0 373.0 70.0C371.9 73.0 369.7 76.7 367.4 80.0C365.1 83.3 362.0 86.7 359.0 90.0C356.0 93.3 351.7 96.7 349.5 100.0C347.3 103.3 346.6 106.7 345.7 110.0C344.9 113.3 344.3 116.7 344.5 120.0C344.6 123.3 344.7 126.7 346.6 130.0C348.5 133.3 354.0 138.0 355.9 140.0C357.8 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.7 142.0 358.9 140.0C359.2 138.0 359.0 133.3 359.6 130.0C360.2 126.7 360.6 123.3 362.5 120.0C364.3 116.7 367.7 113.3 370.7 110.0C373.8 106.7 378.3 103.3 380.5 100.0C382.7 96.7 383.2 93.3 384.0 90.0C384.8 86.7 385.2 83.3 385.4 80.0C385.6 76.7 386.9 73.0 385.0 70.0C383.1 67.0 376.1 62.0 374.1 62.0Z;M372.3 62.0C370.3 62.0 370.5 67.0 369.3 70.0C368.0 73.0 366.4 76.7 364.8 80.0C363.1 83.3 361.6 86.7 359.4 90.0C357.3 93.3 353.8 96.7 351.8 100.0C349.8 103.3 348.7 106.7 347.4 110.0C346.2 113.3 344.7 116.7 344.4 120.0C344.1 123.3 343.9 126.7 345.8 130.0C347.7 133.3 353.7 138.0 355.7 140.0C357.8 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.6 142.0 358.7 140.0C358.9 138.0 358.2 133.3 358.8 130.0C359.4 126.7 360.1 123.3 362.4 120.0C364.7 116.7 369.0 113.3 372.4 110.0C375.8 106.7 380.8 103.3 382.8 100.0C384.8 96.7 384.5 93.3 384.4 90.0C384.4 86.7 383.3 83.3 382.8 80.0C382.3 76.7 383.0 73.0 381.3 70.0C379.5 67.0 374.3 62.0 372.3 62.0Z;M367.4 62.0C365.4 62.0 366.1 67.0 365.7 70.0C365.4 73.0 365.8 76.7 365.2 80.0C364.7 83.3 364.4 86.7 362.6 90.0C360.8 93.3 356.8 96.7 354.3 100.0C351.8 103.3 349.3 106.7 347.4 110.0C345.5 113.3 343.3 116.7 342.9 120.0C342.5 123.3 342.7 126.7 344.8 130.0C347.0 133.3 353.5 138.0 355.7 140.0C357.9 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.7 142.0 358.7 140.0C358.7 138.0 357.5 133.3 357.8 130.0C358.2 126.7 358.5 123.3 360.9 120.0C363.3 116.7 368.3 113.3 372.4 110.0C376.5 106.7 382.8 103.3 385.3 100.0C387.8 96.7 388.0 93.3 387.6 90.0C387.3 86.7 384.9 83.3 383.2 80.0C381.6 76.7 380.4 73.0 377.7 70.0C375.1 67.0 369.4 62.0 367.4 62.0Z;M363.6 62.0C361.6 62.0 365.0 67.0 366.0 70.0C366.9 73.0 369.1 76.7 369.2 80.0C369.2 83.3 368.5 86.7 366.0 90.0C363.6 93.3 357.9 96.7 354.5 100.0C351.0 103.3 347.5 106.7 345.2 110.0C343.0 113.3 341.2 116.7 341.1 120.0C341.0 123.3 342.2 126.7 344.7 130.0C347.1 133.3 353.7 138.0 355.9 140.0C358.2 142.0 357.5 142.0 358.0 142.0C358.5 142.0 359.0 142.0 358.9 140.0C358.9 138.0 357.6 133.3 357.7 130.0C357.7 126.7 357.0 123.3 359.1 120.0C361.2 116.7 365.8 113.3 370.2 110.0C374.6 106.7 382.0 103.3 385.5 100.0C388.9 96.7 390.7 93.3 391.0 90.0C391.3 86.7 389.3 83.3 387.2 80.0C385.0 76.7 381.9 73.0 378.0 70.0C374.0 67.0 365.6 62.0 363.6 62.0Z;M364.6 62.0C362.6 62.0 369.0 67.0 370.5 70.0C371.9 73.0 374.1 76.7 373.5 80.0C372.8 83.3 370.2 86.7 366.6 90.0C362.9 93.3 355.8 96.7 351.8 100.0C347.8 103.3 344.4 106.7 342.6 110.0C340.7 113.3 340.1 116.7 340.6 120.0C341.1 123.3 343.0 126.7 345.6 130.0C348.2 133.3 354.2 138.0 356.2 140.0C358.3 142.0 357.5 142.0 358.0 142.0C358.5 142.0 359.1 142.0 359.2 140.0C359.3 138.0 358.7 133.3 358.6 130.0C358.5 126.7 357.1 123.3 358.6 120.0C360.1 116.7 363.5 113.3 367.6 110.0C371.6 106.7 378.8 103.3 382.8 100.0C386.8 96.7 390.1 93.3 391.6 90.0C393.0 86.7 393.0 83.3 391.5 80.0C390.0 76.7 386.9 73.0 382.5 70.0C378.0 67.0 366.6 62.0 364.6 62.0Z;M370.0 62.0C368.0 62.0 374.9 67.0 375.7 70.0C376.4 73.0 376.6 76.7 374.5 80.0C372.5 83.3 367.9 86.7 363.5 90.0C359.1 93.3 351.9 96.7 348.3 100.0C344.6 103.3 342.7 106.7 341.7 110.0C340.6 113.3 341.2 116.7 342.0 120.0C342.9 123.3 344.5 126.7 346.9 130.0C349.3 133.3 354.5 138.0 356.4 140.0C358.2 142.0 357.5 142.0 358.0 142.0C358.5 142.0 359.1 142.0 359.4 140.0C359.7 138.0 359.8 133.3 359.9 130.0C360.0 126.7 358.9 123.3 360.0 120.0C361.2 116.7 363.5 113.3 366.7 110.0C369.9 106.7 375.6 103.3 379.3 100.0C382.9 96.7 386.3 93.3 388.5 90.0C390.7 86.7 392.7 83.3 392.5 80.0C392.4 76.7 391.4 73.0 387.7 70.0C383.9 67.0 372.0 62.0 370.0 62.0Z;M375.4 62.0C373.4 62.0 378.0 67.0 377.3 70.0C376.6 73.0 374.3 76.7 371.3 80.0C368.3 83.3 363.3 86.7 359.3 90.0C355.2 93.3 349.5 96.7 346.9 100.0C344.2 103.3 343.8 106.7 343.4 110.0C342.9 113.3 343.5 116.7 344.2 120.0C344.9 123.3 345.5 126.7 347.5 130.0C349.5 133.3 354.5 138.0 356.2 140.0C358.0 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 359.2 140.0C359.6 138.0 360.0 133.3 360.5 130.0C361.0 126.7 360.9 123.3 362.2 120.0C363.5 116.7 365.7 113.3 368.4 110.0C371.0 106.7 375.2 103.3 377.9 100.0C380.5 96.7 382.4 93.3 384.3 90.0C386.2 86.7 388.5 83.3 389.3 80.0C390.1 76.7 391.6 73.0 389.3 70.0C387.0 67.0 377.4 62.0 375.4 62.0Z;M376.4 62.0C374.4 62.0 375.7 67.0 374.1 70.0C372.4 73.0 369.3 76.7 366.5 80.0C363.7 83.3 360.3 86.7 357.4 90.0C354.4 93.3 350.5 96.7 348.7 100.0C346.8 103.3 346.7 106.7 346.2 110.0C345.6 113.3 345.2 116.7 345.3 120.0C345.4 123.3 345.2 126.7 347.0 130.0C348.7 133.3 354.1 138.0 355.9 140.0C357.7 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.6 142.0 358.9 140.0C359.2 138.0 359.2 133.3 360.0 130.0C360.7 126.7 361.4 123.3 363.3 120.0C365.2 116.7 368.4 113.3 371.2 110.0C373.9 106.7 377.8 103.3 379.7 100.0C381.5 96.7 381.5 93.3 382.4 90.0C383.2 86.7 383.9 83.3 384.5 80.0C385.2 76.7 387.4 73.0 386.1 70.0C384.7 67.0 378.4 62.0 376.4 62.0Z;M372.6 62.0C370.6 62.0 370.4 67.0 369.0 70.0C367.6 73.0 365.8 76.7 364.2 80.0C362.5 83.3 361.1 86.7 359.1 90.0C357.0 93.3 353.8 96.7 351.9 100.0C350.0 103.3 349.0 106.7 347.8 110.0C346.6 113.3 345.0 116.7 344.6 120.0C344.3 123.3 343.9 126.7 345.8 130.0C347.6 133.3 353.7 138.0 355.7 140.0C357.7 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.6 142.0 358.7 140.0C358.8 138.0 358.1 133.3 358.8 130.0C359.4 126.7 360.3 123.3 362.6 120.0C365.0 116.7 369.4 113.3 372.8 110.0C376.2 106.7 381.0 103.3 382.9 100.0C384.8 96.7 384.2 93.3 384.1 90.0C383.9 86.7 382.7 83.3 382.2 80.0C381.7 76.7 382.6 73.0 381.0 70.0C379.4 67.0 374.6 62.0 372.6 62.0Z;M367.7 62.0C365.7 62.0 366.7 67.0 366.4 70.0C366.1 73.0 366.4 76.7 365.7 80.0C365.1 83.3 364.5 86.7 362.5 90.0C360.6 93.3 356.5 96.7 353.9 100.0C351.3 103.3 348.9 106.7 347.1 110.0C345.3 113.3 343.3 116.7 342.9 120.0C342.6 123.3 342.9 126.7 345.0 130.0C347.1 133.3 353.6 138.0 355.8 140.0C357.9 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 358.8 140.0C358.8 138.0 357.6 133.3 358.0 130.0C358.4 126.7 358.6 123.3 360.9 120.0C363.3 116.7 368.1 113.3 372.1 110.0C376.1 106.7 382.3 103.3 384.9 100.0C387.5 96.7 387.7 93.3 387.5 90.0C387.3 86.7 385.2 83.3 383.7 80.0C382.2 76.7 381.1 73.0 378.4 70.0C375.7 67.0 369.7 62.0 367.7 62.0Z;M365.9 62.0C363.9 62.0 367.2 67.0 367.8 70.0C368.3 73.0 369.6 76.7 369.1 80.0C368.6 83.3 367.2 86.7 364.6 90.0C362.0 93.3 356.5 96.7 353.2 100.0C350.0 103.3 347.1 106.7 345.1 110.0C343.2 113.3 341.8 116.7 341.8 120.0C341.8 123.3 342.8 126.7 345.1 130.0C347.5 133.3 353.8 138.0 356.0 140.0C358.1 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.9 142.0 359.0 140.0C359.0 138.0 358.0 133.3 358.1 130.0C358.3 126.7 357.8 123.3 359.8 120.0C361.8 116.7 366.1 113.3 370.1 110.0C374.2 106.7 381.0 103.3 384.2 100.0C387.5 96.7 389.1 93.3 389.6 90.0C390.1 86.7 388.7 83.3 387.1 80.0C385.5 76.7 383.3 73.0 379.8 70.0C376.2 67.0 367.9 62.0 365.9 62.0Z;M367.8 62.0C365.8 62.0 370.3 67.0 370.8 70.0C371.3 73.0 372.0 76.7 370.9 80.0C369.7 83.3 367.1 86.7 363.9 90.0C360.6 93.3 354.6 96.7 351.3 100.0C348.0 103.3 345.5 106.7 344.0 110.0C342.4 113.3 341.7 116.7 342.0 120.0C342.3 123.3 343.5 126.7 345.8 130.0C348.2 133.3 354.1 138.0 356.1 140.0C358.1 142.0 357.5 142.0 358.0 142.0C358.5 142.0 359.0 142.0 359.1 140.0C359.2 138.0 358.7 133.3 358.8 130.0C359.0 126.7 358.3 123.3 360.0 120.0C361.7 116.7 365.3 113.3 369.0 110.0C372.7 106.7 379.0 103.3 382.3 100.0C385.6 96.7 387.8 93.3 388.9 90.0C390.0 86.7 389.9 83.3 388.9 80.0C387.8 76.7 386.3 73.0 382.8 70.0C379.3 67.0 369.8 62.0 367.8 62.0Z;M370.0 62.0C368.0 62.0 371.2 67.0 371.0 70.0C370.8 73.0 370.5 76.7 369.0 80.0C367.5 83.3 365.0 86.7 362.0 90.0C359.0 93.3 353.8 96.7 351.0 100.0C348.2 103.3 346.3 106.7 345.0 110.0C343.7 113.3 342.8 116.7 343.0 120.0C343.2 123.3 343.8 126.7 346.0 130.0C348.2 133.3 354.0 138.0 356.0 140.0C358.0 142.0 357.5 142.0 358.0 142.0C358.5 142.0 358.8 142.0 359.0 140.0C359.2 138.0 358.7 133.3 359.0 130.0C359.3 126.7 359.2 123.3 361.0 120.0C362.8 116.7 366.5 113.3 370.0 110.0C373.5 106.7 379.2 103.3 382.0 100.0C384.8 96.7 386.2 93.3 387.0 90.0C387.8 86.7 387.7 83.3 387.0 80.0C386.3 76.7 385.8 73.0 383.0 70.0C380.2 67.0 372.0 62.0 370.0 62.0Z"/>
+            </path>
+            <image class="art-ogien" href="assets/feature/feature-4-ogien.png" x="337" y="147" width="53" height="74"/>
+            <image class="art-srodek" href="assets/feature/feature-4-srodek.png" x="347" y="179" width="31" height="42"/>
+            <circle class="art-iskra" cx="356" cy="170" r="2" fill="#f98e3a" opacity="0"/>
+            <circle class="art-iskra art-iskra--2" cx="372" cy="166" r="2" fill="#f98e3a" opacity="0"/>
+            <circle class="art-iskra art-iskra--3" cx="364" cy="160" r="1.5" fill="#f98e3a" opacity="0"/>
+          </svg>
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--namiot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 22V17.35L10.75 5.55L9 3.2L10.6 2L12 3.875L13.4 2L15 3.2L13.25 5.55L22 17.35V22H2ZM8.225 20H15.775L12 14.725L8.225 20Z"/></svg><span class="feature-tag-label">Pod namiot</span></span>
+            </div>
+            <h3>Szukasz miejsca na nocleg pod&nbsp;namiotem?</h3>
+            <p>„Zanocuj w&nbsp;lesie”, miejsca biwakowe lasów państwowych, pola namiotowe i&nbsp;campingowe oraz punkty dodane przez społeczność</p>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <svg class="feature-media feature-art" viewBox="0 0 440 280" width="440" height="280" aria-hidden="true" focusable="false">
+            <image href="assets/feature/feature-6.png" width="440" height="280"/>
+            <g class="art-apteczka">
+              <image href="assets/feature/feature-6-apteczka.png" x="133" y="65" width="171" height="156"/>
+              <image class="art-krzyz" href="assets/feature/feature-6-krzyz.png" x="175" y="130" width="69" height="69"/>
+            </g>
+            <image href="assets/feature/feature-6-przod.png" x="56" y="181" width="294" height="51"/>
+          </svg>
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--medyczna"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 9H21V15H15V21H9V15H3V9H9V3H15V9Z"/></svg><span class="feature-tag-label">Pomoc medyczna</span></span>
+            </div>
+            <h3>Potrzebujesz pomocy medycznej?</h3>
+            <p>Znajdź najbliższą apteczkę na&nbsp;szlaku, placówkę ratownictwa lub aptekę</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sekcja ze szlakiem: tekst to prawdziwy HTML (czytnik ekranu, wyszukiwarka,
+           zaznaczanie), szlak to inline SVG pod nim. Całość to „artboard" o stałych
+           proporcjach, skalowany z szerokością (kontener `cqw`): desktop 1695x1025
+           jak w makiecie, mobile osobny pionowy układ 390x720 z własną ścieżką.
+           Szlak rysuje się raz, gdy sekcja wjeżdża w ekran (main.js): maska z
+           grubszą linią odsłania kreskowaną ścieżkę, więc rytm kresek 100/40 zostaje
+           nietknięty. Bez JS i przy „ogranicz ruch" szlak jest od razu cały. -->
+      <section class="trail" aria-labelledby="trail-title">
+        <div class="trail-stage trail-stage--wide">
+          <svg class="trail-svg" viewBox="0 0 1695 1025" fill="none" aria-hidden="true" focusable="false">
+            <defs>
+              <mask id="trail-reveal-wide" maskUnits="userSpaceOnUse" x="0" y="0" width="1695" height="1025">
+                <path class="trail-reveal" d="M170 220.403C277 36.3956 642.105 13.8584 661.5 236.903C683.5 489.903 154 373.895 222 720.405C281.291 1022.54 630 998.642 764 803.649C879.206 636.004 792.5 249.142 1077.5 297.142C1347.61 342.634 1077.5 834.117 1550.5 720.405" stroke="#fff" stroke-width="64" pathLength="1000"/>
+              </mask>
+            </defs>
+            <path d="M170 220.403C277 36.3956 642.105 13.8584 661.5 236.903C683.5 489.903 154 373.895 222 720.405C281.291 1022.54 630 998.642 764 803.649C879.206 636.004 792.5 249.142 1077.5 297.142C1347.61 342.634 1077.5 834.117 1550.5 720.405" stroke="#E8352B" stroke-width="32" stroke-dasharray="100 40" mask="url(#trail-reveal-wide)"/>
+          </svg>
+        </div>
+        <div class="trail-stage trail-stage--narrow">
+          <svg class="trail-svg" viewBox="0 0 390 590" fill="none" aria-hidden="true" focusable="false">
+            <defs>
+              <mask id="trail-reveal-narrow" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="590">
+                <path class="trail-reveal" d="M302.7 40.0C370.6 79.5 378.9 214.1 296.7 221.3C203.3 229.4 246.1 34.1 118.3 59.2C6.9 81.0 15.7 209.7 87.6 259.1C149.5 301.6 292.1 269.6 274.4 374.7C257.7 474.3 76.4 374.7 118.3 549.2" stroke="#fff" stroke-width="26.0" pathLength="1000"/>
+              </mask>
+            </defs>
+            <path d="M302.7 40.0C370.6 79.5 378.9 214.1 296.7 221.3C203.3 229.4 246.1 34.1 118.3 59.2C6.9 81.0 15.7 209.7 87.6 259.1C149.5 301.6 292.1 269.6 274.4 374.7C257.7 474.3 76.4 374.7 118.3 549.2" stroke="#E8352B" stroke-width="11.8" stroke-dasharray="36.9 14.8" mask="url(#trail-reveal-narrow)"/>
+          </svg>
+        </div>
+        <div class="trail-copy">
+          <h2 class="trail-title" id="trail-title">Planuj trasę z&nbsp;<span class="accent">Hyc!</span></h2>
+          <p class="trail-text">Sprawdź, jakie<br class="trail-br-m"> punkty masz<br class="trail-br"> po<br class="trail-br-m"> drodze i&nbsp;zapisuj,<br class="trail-br-m"> by&nbsp;mieć<br class="trail-br"> je<br class="trail-br-m"> zawsze pod&nbsp;ręką</p>
+        </div>
+      </section>
+
+      <!-- CTA banner — karta na zdjęciu, wyśrodkowany nagłówek + tekst + baton
+           (assets/skauci-bg.jpg, ta sama ilustracja stylistycznie co "Zanocuj
+           w lesie": łąka/jezioro/góry/zające). Link do grupy Skautów Hyc! na
+           Facebooku — ten sam adres co w FAQ o Skautach; przy zmianie
+           zaktualizuj oba miejsca. -->
+      <section class="scouts-cta">
+        <div class="scouts-cta-inner">
+          <h2>Dołącz do Skautów Hyc!</h2>
+          <p>Skauci Hyc! to osoby, które podczas wędrówek sprawdzają, uzupełniają i&nbsp;dodają punkty na szlaku. Dzięki temu pomagają kolejnym wędrowcom łatwiej i&nbsp;bezpieczniej przejść trasę.</p>
+          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener" data-goatcounter-click="index-fb-grupa">Dołącz do Skautów</a>
+        </div>
+      </section>
+
+      <section class="partnerships" aria-label="Partner">
+        <div class="faq-intro">
+          <h2 class="faq-heading">Partner</h2>
+          <p class="faq-subheading">Partnerem Hyc! jest <strong>Stowarzyszenie Apteczka na Szlaku</strong>, które rozwija sieć górskich apteczek pierwszej pomocy i&nbsp;zwiększa bezpieczeństwo wędrowców.</p>
+          <a class="about-link partnerships-btn" href="https://www.facebook.com/ApteczkaNaSzlaku" target="_blank" rel="noopener">Czytaj więcej <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="partnerships-logo">
+          <img src="assets/apteczka-na-szlaku.png" alt="Logo Stowarzyszenia Apteczka na Szlaku — serce z górami i krzyżem pierwszej pomocy" width="240" height="240" loading="lazy">
+        </div>
+      </section>
+
+      <!-- FAQ — nagłówek w lewej kolumnie, accordion w prawej, kolory/fonty
+           własne. Natywny <details>/<summary>: focus, klawiatura (Enter/
+           Space) i stan otwarcia za darmo, bez JS. -->
+      <section class="faq" id="faq" aria-label="Najczęściej zadawane pytania">
+        <div class="faq-intro">
+          <h2 class="faq-heading">Najczęstsze pytania</h2>
+          <p class="faq-subheading">Zebraliśmy odpowiedzi na najczęstsze pytania o Hyc! Jeśli czegoś tu nie znajdziesz, śmiało napisz do nas.</p>
+          <a class="about-link" href="kontakt.html">Kontakt <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>
+              <span>Czym jest Hyc?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Hyc! to aplikacja, która bez&nbsp;zatrzymywania się podczas marszu, jedną ręką pomaga znaleźć wszystko, czego potrzebujesz na&nbsp;szlaku. Prowadzi do&nbsp;najbliższego celu przed&nbsp;Tobą lub dookoła. Znajdziesz w&nbsp;niej między innymi schronienia, noclegi, miejsca na namiot, źródła wody, apteczki, restauracje i&nbsp;sklepy.</p>
+            <p class="faq-answer">Możesz też swobodnie przeglądać mapę, wyszukiwać interesujące Cię miejsca i&nbsp;zapisywać je na później.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Dla kogo jest Hyc?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Hyc! jest dla każdego wędrowca, niezależnie od doświadczenia i długości trasy. Dla rodziców z dziećmi, którzy chcą czuć się pewniej na szlaku i wiedzieć, gdzie po drodze będą mogli schować się przed ulewą albo znaleźć środki do odkażenia rany. Dla doświadczonych wędrowców, którzy ruszają na długie szlaki i chcą lepiej przygotować się do drogi. Dla każdego, kto chce mieć pod ręką informacje o tym, co czeka go na szlaku.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Czy aplikacja jest darmowa?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Tak. Wszystkie obecne funkcje Hyc! są i&nbsp;zawsze będą darmowe. W&nbsp;przyszłości planujemy rozbudowywać aplikację i&nbsp;mogą pojawić się dodatkowe, płatne funkcje.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Jaki obszar obejmuje Hyc?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Na razie Hyc! obejmuje całą Polskę oraz obszar do 50 km od&nbsp;polskiej granicy na terenie Czech i&nbsp;Słowacji. To dopiero początek. Z&nbsp;czasem będziemy rozszerzać mapę o&nbsp;kolejne państwa.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Jakie noclegi znajdę w&nbsp;aplikacji?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Znajdziesz tu wybrane przez nas niedrogie noclegi. Szczególnie te położone przy szlakach, a&nbsp;także ogólnodostępne chatki górskie, bacówki, schrony.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Skąd bierzemy informacje o&nbsp;miejscach?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Bazę budujemy na&nbsp;publicznie dostępnych źródłach, które łączymy i&nbsp;weryfikujemy. Dalej rozwija ją&nbsp;nasza społeczność. Nowe punkty mogą dodawać i&nbsp;aktualizować zarówno użytkownicy, jak i&nbsp;Skauci Hyc!, którzy od&nbsp;czasu do czasu biorą też udział w&nbsp;płatnych akcjach terenowych, sprawdzając miejsca na&nbsp;szlaku i&nbsp;dodając zdjęcia.</p>
+            <p class="faq-answer">Chcesz zostać Skautem Hyc? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener" data-goatcounter-click="index-fb-grupa">tutaj</a>.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Czy aplikacja działa offline?</span>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Obecnie aplikacja wymaga połączenia z&nbsp;internetem. Tryb offline, pobieranie map i&nbsp;więcej nowych funkcji będą dostępne w&nbsp;okolicach stycznia 2027.</p>
+          </details>
+        </div>
+      </section>
+
+    </main>
+
+    <footer id="kontakt">
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <!-- Play wymaga PUBLICZNEGO adresu, pod którym da się zażądać usunięcia
+           konta — także wtedy, gdy usunięcie działa w aplikacji (Data deletion
+           w formularzu App content). Link musi być osiągalny bez logowania. -->
+      <a href="kontakt.html">Kontakt</a>
+    </footer>
+
+  </div>
+
+  <!-- Instalacja na Androida — cały proces w jednym oknie, dwa kroki.
+       Wzorzec: editable stepper (UX Patterns / NN-g) — kroki są klikalne,
+       więc user wraca i skacze swobodnie, nie tylko liniowo. Natywny <dialog>
+       daje focus trap, Escape i backdrop bez własnego kodu. -->
+  <dialog class="flow-modal" id="android-modal" aria-labelledby="modal-title">
+    <p class="modal-intro">By umożliwić testowanie, Google wymaga dwóch kroków. Przeprowadzimy Cię przez nie</p>
+
+    <nav class="stepper" aria-label="Postęp instalacji">
+      <ol>
+        <li><button class="stepper-btn is-current" type="button" data-goto="1"><span class="stepper-num">1</span><span class="stepper-name">Grupa</span></button></li>
+        <li><button class="stepper-btn" type="button" data-goto="2"><span class="stepper-num">2</span><span class="stepper-name">Dostęp</span></button></li>
+      </ol>
+    </nav>
+
+    <div class="modal-body" id="modal-body">
+
+      <section class="modal-step" data-step="1">
+        <p class="modal-eyebrow">Krok 1 z 2</p>
+        <h2 class="modal-title" id="modal-title" tabindex="-1" autofocus>Dołącz do grupy testerów</h2>
+        <p class="modal-lead">Google wymaga dołączenia do grupy testerów. Otworzymy ją w nowej karcie. Kliknij tam <strong>„Dołącz do grupy”</strong> i przejdź do następnego kroku.</p>
+
+        <div class="modal-note">
+          <p class="modal-note-title">Zaloguj się</p>
+          <p class="modal-note-text">Jeśli nie jesteś zalogowany, nie zobaczysz możliwości dołączenia do grupy. Zaloguj się i <strong>kliknij przycisk „Przejdź do grupy” na dole jeszcze raz</strong>. Dopiero wtedy zobaczysz opcję dołączenia, jak na screenshocie poniżej.</p>
+          <p class="modal-note-shot-label">Screenshot</p>
+          <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
+        </div>
+
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener" data-goatcounter-click="index-android-grupa">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
+        </a>
+      </section>
+
+      <section class="modal-step is-hidden" data-step="2">
+        <p class="modal-eyebrow">Krok 2 z 2</p>
+        <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
+        <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy. Na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener" data-goatcounter-click="index-android-play">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
+        </a>
+      </section>
+
+
+    </div>
+
+    <div class="modal-nav">
+      <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
+      <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
+    </div>
+  </dialog>
+
+  <!-- Instalacja na iOS — jedna zewnętrzna akcja (link TestFlight), nie
+       kreator: bez steppera, bez Wstecz/Dalej. Modal istnieje wyłącznie po to,
+       żeby ustawić oczekiwania przed kliknięciem: to nie jest instalacja
+       Hyc! wprost, tylko przejście na stronę Apple z dwoma krokami do
+       wykonania tam.
+       Tekst nie opisuje kroków Apple własnymi słowami — poprzednia wersja
+       („wróć tutaj i kliknij ten sam przycisk jeszcze raz") kłamała: oba
+       kroki (Get TestFlight / View Hyc! Beta) dzieją się na stronie Apple,
+       przez jej przyciski, nie przez powrót na gethyc.com. Streszczanie
+       cudzego UI rozjeżdża się przy każdej zmianie po ich stronie — stąd
+       tylko zapowiedź „będą dwa kroki, zrób je tam".
+       Te same klasy co modal Androida (patrz styles.css), zero nowego CSS. -->
+  <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
+    <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
+    <p class="modal-lead">TestFlight to aplikacja Apple do testów beta. Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
+
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener" data-goatcounter-click="index-ios-testflight">
+      <img src="assets/apple.svg" alt="">
+      <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
+    </a>
+  </dialog>
+
+  <script src="scroll-lock.js?v=2"></script>
+  <script src="config.js?v=20261030"></script>
+  <script src="nav.js?v=20261008" defer></script>
+  <script data-goatcounter="https://dinin92.goatcounter.com/count" async src="assets/goatcounter-count.js?v=2"></script>
+  <script src="main.js?v=2026103012"></script>
+</body>
+</html>
