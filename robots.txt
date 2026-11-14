@@ -1,0 +1,23 @@
+# Zastrzeżenie eksploracji tekstu i danych (art. 26³ ust. 2 pr. aut., art. 8a ubd).
+# Wyszukiwarki i odpowiedzi AI (także wyszukiwanie w czatach) wolno, trenowanie AI nie.
+# Zob. Regulamin pkt 6. Ta strona nie zawiera Treści opisowych ani opisów punktów.
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+Allow: /
+
+# Roboty zbierające dane do trenowania modeli. Google-Extended to jeden przełącznik
+# na trening Gemini i na odpowiedzi w aplikacji Gemini, więc te odpowiedzi też są
+# wyłączone (wyszukiwarki Google ani AI Overviews nie dotyczy). Roboty wyszukiwania AI
+# (OAI-SearchBot, Claude-SearchBot, PerplexityBot) podlegają grupie *.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: meta-externalagent
+Disallow: /
+
+# Mapa strony dla Google Search Console (pobierz.html ma noindex, poza mapą).
+Sitemap: https://gethyc.com/sitemap.xml
